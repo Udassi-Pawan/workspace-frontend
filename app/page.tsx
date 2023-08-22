@@ -1,5 +1,9 @@
-import Signin from "./components/Signin";
+export interface pageProps {}
 
-export default function Home() {
-  return <Signin></Signin>;
+export default function Page({}: pageProps) {
+  return (
+    <>
+      <h1 className="">af</h1>
+    </>
+  );
 }

@@ -1,12 +1,13 @@
 import NextAuth from "next-auth";
-import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
-import jwt from "jsonwebtoken";
 const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      httpOptions: {
+        timeout: 40000,
+      },
       authorization: {
         params: {
           prompt: "consent",
@@ -16,11 +17,16 @@ const handler = NextAuth({
       },
     }),
   ],
-
+  // session: {
+  //   maxAge: 3600,
+  // },
+  // jwt: {
+  //   maxAge: 3600,
+  // },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return "/home";
-    },
+    // async redirect({ url, baseUrl }) {
+    //   return "/home";
+    // },
     async jwt({ token, account, user }) {
       if (account) {
         const res = await fetch("http://localhost:3333/auth/login", {
