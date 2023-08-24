@@ -36,13 +36,13 @@ const handler = NextAuth({
           },
         });
         const resParsed = await res.json();
-        console.log("RES:", resParsed);
+        console.log("RES:", resParsed.auth_Token);
         console.log("USER:", user);
         token = Object.assign({}, token, {
           id_token: account.id_token,
         });
         token = Object.assign({}, token, {
-          myToken: resParsed,
+          myToken: resParsed.authToken,
         });
       }
 
