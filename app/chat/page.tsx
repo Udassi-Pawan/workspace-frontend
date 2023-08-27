@@ -51,6 +51,13 @@ export default function Page({}: pageProps) {
   };
   useEffect(() => {
     getUserData();
+    socket?.emit("join", {}, () => {
+      setJoined(true);
+    });
+    socket?.emit("findAllChat", {}, (mess: any) => {
+      setMessages(mess);
+      console.log(mess);
+    });
     socket?.on("messsage", (msg: messageType) => {
       setMessages((prev) => [...prev, msg]);
       console.log(msg, "received");
@@ -93,23 +100,13 @@ export default function Page({}: pageProps) {
   //   }, 2000);
   // };
 
-  const joinHandler = async function () {
-    socket.emit("join", {}, () => {
-      setJoined(true);
-    });
-    socket.emit("findAllChat", {}, (mess: any) => {
-      setMessages(mess);
-      console.log(mess);
-    });
-  };
-
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
-      {!joined && (
+      {/* {!joined && (
         <div className="flex gap-3">
           <button onClick={joinHandler}>Join</button>
         </div>
-      )}
+      )} */}
       {joined && (
         <div className="flex gap-3">
           <select defaultValue={"0"} ref={textGroup}>

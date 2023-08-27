@@ -106,7 +106,7 @@ export default function page({}: pageProps) {
 
   return (
     <div>
-      <video muted ref={userVideo} autoPlay playsInline />
+      {/* <video muted ref={userVideo} autoPlay playsInline /> */}
       {peers.map((peer: any, index: any) => {
         return <Video key={index} peer={peer} />;
       })}
