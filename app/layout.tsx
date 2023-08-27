@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessProvider } from "./components/SessProvider";
 import { ReduxProvider } from "@/redux/provider";
+import { SocketProvider } from "./components/SocketProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ReduxProvider>
-          <SessProvider>{children}</SessProvider>
+          <SessProvider>
+            <SocketProvider>{children}</SocketProvider>
+          </SessProvider>
         </ReduxProvider>
       </body>
     </html>

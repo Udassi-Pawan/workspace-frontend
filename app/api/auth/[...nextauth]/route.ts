@@ -36,7 +36,7 @@ const handler = NextAuth({
           },
         });
         const resParsed = await res.json();
-        console.log("RES:", resParsed.auth_Token);
+        // console.log("RES:", resParsed.authToken);
         console.log("USER:", user);
         token = Object.assign({}, token, {
           id_token: account.id_token,
@@ -54,7 +54,7 @@ const handler = NextAuth({
           id_token: token.id_token,
         });
         session = Object.assign({}, session, {
-          auth_Token: token.myToken,
+          authToken: token.myToken,
         });
       }
       return session;

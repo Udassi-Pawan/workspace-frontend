@@ -1,129 +1,113 @@
 "use client";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { io } from "socket.io-client";
-import { setUser } from "@/redux/features/user-slice";
-export interface pageProps {}
 
-export default function Page({}: pageProps) {
-  const { data: session } = useSession();
-  const dispatch = useDispatch<AppDispatch>();
-  const userFromDb = useAppSelector((state) => state.userReducer.user);
-  let socket = io("http://127.0.0.1:3333", {
-    transportOptions: {
-      polling: {
-        extraHeaders: {
-          Authorization: `Bearer ${session?.auth_Token}`,
-        },
-      },
-    },
-  });
-  const getUserData = async function () {
-    console.log(session);
-    const userData = await fetch(
-      `http://localhost:3333/users/${session?.user?.email}`
-    );
-    const dbUser = await userData.json();
-    console.log(dbUser);
-    dispatch(setUser(dbUser));
-  };
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Peer from "simple-peer";
+import { SocketContext } from "./components/SocketProvider";
+
+const videoConstraints = {
+  height: window.innerHeight / 2,
+  width: window.innerWidth / 2,
+};
+
+const Video = (props: any) => {
+  const ref = useRef<any>();
+
   useEffect(() => {
-    socketInitializer();
-    getUserData();
-  }, [session]);
-  const [messages, setMessages] = useState<{ name: string; text: string }[]>(
-    []
-  );
-  const [name, setName] = useState<string>("");
-  const [joined, setJoined] = useState(false);
-  const [newMessageText, setNewMessageText] = useState<null | string>("");
-  const [isTyping, setIsTyping] = useState<string | null>(null);
-  const socketInitializer = async () => {
-    socket.emit("findAllChat", {}, (mess: any) => {
-      setMessages(mess);
-      console.log(mess);
+    props.peer.on("stream", (stream: any) => {
+      ref.current!.srcObject = stream;
     });
-    socket.on("messsage", (mess: { name: string; text: string }) => {
-      setMessages((prev) => [...prev, mess]);
-      // console.log(mess, "received");
-      return "received";
-    });
-    socket.on("typing", ({ name, isTyping }) => {
-      if (isTyping) {
-        setIsTyping(name);
-      } else {
-        setIsTyping(null);
-      }
-    });
-  };
+  }, []);
 
-  const sendHandler = async function () {
-    socket.emit(
-      "createChat",
-      {
-        text: newMessageText,
-        name,
-      },
-      () => {
-        console.log("sent", newMessageText);
-      }
-    );
-  };
-  // let timeout;
-  // const emitTyping = async function () {
-  //   socket.emit("typing", { isTyping: true });
-  //   timeout = setTimeout(() => {
-  //     socket.emit("typing", { isTyping: false });
-  //   }, 2000);
-  // };
+  return <video autoPlay ref={ref} />;
+};
 
-  const joinHandler = async function () {
-    socket.emit("join", {}, () => {
-      setJoined(true);
+export interface pageProps {}
+export default function page({}: pageProps) {
+  const [peers, setPeers] = useState<any>([]);
+  const socketRef = useRef();
+  const userVideo: any = useRef();
+  const peersRef = useRef<any>([]);
+  const roomID = "abcd";
+  let { socket } = useContext(SocketContext);
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: videoConstraints, audio: true })
+      .then((stream) => {
+        userVideo.current!.srcObject = stream;
+        socket!.emit("join room", roomID);
+        socket!.on("all users", (users: any) => {
+          const peers: any = [];
+          users.forEach((userID: any) => {
+            const peer = createPeer(userID, socket.id, stream);
+            peersRef.current.push({
+              peerID: userID,
+              peer,
+            });
+            peers.push(peer);
+          });
+          setPeers(peers);
+        });
+
+        socket.on("user joined", (payload: any) => {
+          const peer = addPeer(payload.signal, payload.callerID, stream);
+          peersRef.current.push({
+            peerID: payload.callerID,
+            peer,
+          });
+
+          setPeers((users: any) => [...users, peer]);
+        });
+
+        socket.on("receiving returned signal", (payload: any) => {
+          const item = peersRef.current.find(
+            (p: any) => p.peerID === payload.id
+          );
+          item.peer.signal(payload.signal);
+        });
+      });
+  }, []);
+
+  function createPeer(userToSignal: any, callerID: any, stream: any) {
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream,
     });
-  };
+
+    peer.on("signal", (signal) => {
+      socket.emit("sending signal", {
+        userToSignal,
+        callerID,
+        signal,
+      });
+    });
+
+    return peer;
+  }
+
+  function addPeer(incomingSignal: any, callerID: any, stream: any) {
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream,
+    });
+
+    peer.on("signal", (signal) => {
+      socket.emit("returning signal", { signal, callerID });
+    });
+
+    peer.signal(incomingSignal);
+
+    return peer;
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-5">
-      <p className="">{userFromDb.name}</p>
-      {!joined && (
-        <div className="flex gap-3">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="name"
-          ></input>
-          <button onClick={joinHandler}>Join</button>
-        </div>
-      )}
-      {joined && (
-        <div className="flex gap-3">
-          <input
-            value={newMessageText!}
-            onChange={(e) => {
-              // emitTyping();
-              setNewMessageText(e.target.value);
-            }}
-            placeholder="text"
-          ></input>
-          <button onClick={sendHandler}>Send</button>
-        </div>
-      )}
-
-      {joined && (
-        <div className="">
-          {messages.map((m: { name: string; text: string }) => (
-            <div key={m.text} className="">
-              {" "}
-              <p className="">
-                {m.name} : {m.text}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+    <div>
+      <video muted ref={userVideo} autoPlay playsInline />
+      {peers.map((peer: any, index: any) => {
+        return <Video key={index} peer={peer} />;
+      })}
     </div>
   );
 }
