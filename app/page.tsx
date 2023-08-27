@@ -3,6 +3,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { SocketContext } from "./components/SocketProvider";
+import { useSession } from "next-auth/react";
 
 const videoConstraints = {
   height: window.innerHeight / 2,
@@ -24,13 +25,14 @@ const Video = (props: any) => {
 export interface pageProps {}
 export default function page({}: pageProps) {
   const [peers, setPeers] = useState<any>([]);
-  const socketRef = useRef();
   const userVideo: any = useRef();
   const peersRef = useRef<any>([]);
   const roomID = "abcd";
   let { socket } = useContext(SocketContext);
-
+  const { data } = useSession();
   useEffect(() => {
+    if (!socket) return;
+    console.log(socket);
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
@@ -66,7 +68,7 @@ export default function page({}: pageProps) {
           item.peer.signal(payload.signal);
         });
       });
-  }, []);
+  }, [socket]);
 
   function createPeer(userToSignal: any, callerID: any, stream: any) {
     const peer = new Peer({
