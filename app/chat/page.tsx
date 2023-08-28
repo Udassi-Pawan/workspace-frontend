@@ -63,6 +63,10 @@ export default function Page({}: pageProps) {
       console.log(msg, "received");
       return "received";
     });
+    socket?.on("usersOnline", (data: any) => {
+      console.log(data);
+    });
+
     console.log(socket);
     return () => {
       socket?.off("message");

@@ -29,15 +29,23 @@ export default function page({}: pageProps) {
   const peersRef = useRef<any>([]);
   const roomID = "abcd";
   let { socket } = useContext(SocketContext);
-  const { data } = useSession();
   useEffect(() => {
     if (!socket) return;
     console.log(socket);
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
+        socket!.emit("join", {}, () => {});
+
         userVideo.current!.srcObject = stream;
         socket!.emit("join room", roomID);
+
+        socket!.on("usersOnline", (data: any) => {
+          console.log(data);
+        });
+        socket?.on("usersOnline", (data: any) => {
+          console.log(data);
+        });
         socket!.on("all users", (users: any) => {
           const peers: any = [];
           users.forEach((userID: any) => {
@@ -106,7 +114,7 @@ export default function page({}: pageProps) {
 
   return (
     <div>
-      {/* <video muted ref={userVideo} autoPlay playsInline /> */}
+      <video muted ref={userVideo} autoPlay playsInline />
       {peers.map((peer: any, index: any) => {
         return <Video key={index} peer={peer} />;
       })}
