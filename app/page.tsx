@@ -54,7 +54,7 @@ export default function page({}: pageProps) {
           userVideo.current!.srcObject = stream;
           call.answer(stream);
           call.on("stream", (remoteStream: any) => {
-            // otherVideo.current!.srcObject = remoteStream;
+            // otherVideo.current!.srcObject = remoteStream;fa
             setPeersUpdated(remoteStream);
           });
         });
