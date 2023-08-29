@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { SocketContext } from "./components/SocketProvider";
-import { useSession } from "next-auth/react";
 
 const videoConstraints = {
   height: window.innerHeight / 2,
@@ -17,6 +16,9 @@ const Video = (props: any) => {
     props.peer.on("stream", (stream: any) => {
       ref.current!.srcObject = stream;
     });
+    return () => {
+      props.peer.off("stream");
+    };
   }, []);
 
   return <video autoPlay ref={ref} />;
@@ -27,7 +29,6 @@ export default function page({}: pageProps) {
   const [peers, setPeers] = useState<any>([]);
   const userVideo: any = useRef();
   const peersRef = useRef<any>([]);
-  const roomID = "abcd";
   let { socket } = useContext(SocketContext);
   const [usersOnline, setUsersOnline] = useState<any>(null);
   const [incomingCall, setIncomingCall] = useState<any>(null);
@@ -45,6 +46,11 @@ export default function page({}: pageProps) {
 
     socket!.emit("join", {}, () => {});
 
+    socket.on("callStatus", (callStatus: any) => {
+      console.log("callStatus", callStatus);
+      setIncomingCall(callStatus);
+    });
+
     socket?.on("usersOnline", (data: any) => {
       console.log(data);
       setUsersOnline((prev: any) => {
@@ -57,10 +63,12 @@ export default function page({}: pageProps) {
       stream = await getStream();
     })();
 
-    socket.on("user joined", (payload: any) => {
+    socket.on("user joined", async (payload: any) => {
       console.log("user joined", payload);
-      setIncomingCall(payload);
-      return;
+
+      const stream = await getStream();
+      userVideo.current!.srcObject = stream;
+
       const peer = addPeer(payload.signal, payload.callerID, stream);
       peersRef.current.push({
         peerID: payload.callerID,
@@ -78,6 +86,12 @@ export default function page({}: pageProps) {
       console.log("peerrefs", peersRef);
       item.peer.signal(payload.signal);
     });
+    return () => {
+      socket.off("callStatus");
+      socket.off("usersOnline");
+      socket.off("user joined");
+      socket.off("all users");
+    };
   }, [socket]);
   console.log(usersOnline);
 
@@ -118,28 +132,12 @@ export default function page({}: pageProps) {
     return peer;
   }
   const acceptHandler = async function () {
-    const payload = incomingCall;
-
+    socket.emit("acceptCall", { groupId: "64e6facf41af7c6169f50a9c" });
     const stream = await getStream();
     userVideo.current!.srcObject = stream;
-    const peer = addPeer(payload.signal, payload.callerID, stream);
-    peersRef.current.push({
-      peerID: payload.callerID,
-      peer,
-    });
 
-    setPeers((users: any) => [...users, peer]);
-  };
-
-  const startHandler = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
-      audio: true,
-    });
-    userVideo.current!.srcObject = stream;
-    // socket!.emit("join room", roomID);
     const peers: any = [];
-    usersOnline["64e6facf41af7c6169f50a9c"].forEach((user: any) => {
+    incomingCall.forEach((user: any) => {
       if (user.clientId == socket.id) return;
       const peer = createPeer(user.clientId, socket.id, stream);
       peersRef.current.push({
@@ -151,13 +149,27 @@ export default function page({}: pageProps) {
     setPeers(peers);
   };
 
+  const startHandler = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: videoConstraints,
+      audio: true,
+    });
+    userVideo.current!.srcObject = stream;
+    socket.emit("startCall", { groupId: "64e6facf41af7c6169f50a9c" });
+  };
+
+  const clearHandler = async function () {
+    socket.emit("clearCall", { groupId: "64e6facf41af7c6169f50a9c" }, () => {});
+  };
+
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
       <video muted ref={userVideo} autoPlay playsInline />
       {peers.map((peer: any, index: any) => {
         return <Video key={index} peer={peer} />;
       })}
       <button onClick={startHandler}>start video call</button>
+      <button onClick={clearHandler}>clear video call</button>
       {incomingCall && (
         <button onClick={acceptHandler}>accept incoming call</button>
       )}
