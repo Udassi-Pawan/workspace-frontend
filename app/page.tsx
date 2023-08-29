@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Peer from "simple-peer";
 import { SocketContext } from "./components/SocketProvider";
 
 const videoConstraints = {
@@ -9,26 +8,22 @@ const videoConstraints = {
   width: window.innerWidth / 2,
 };
 
-const Video = (props: any) => {
-  const ref = useRef<any>();
+const Video = ({ stream }: { stream: any }) => {
+  const localVideo = React.createRef<any>();
 
   useEffect(() => {
-    props.peer.on("stream", (stream: any) => {
-      ref.current!.srcObject = stream;
-      console.log(stream);
-    });
-    return () => {
-      props.peer.off("stream");
-    };
-  }, []);
+    if (localVideo.current) localVideo.current.srcObject = stream;
+  }, [stream, localVideo]);
 
-  return <video autoPlay ref={ref} />;
+  return (
+    <video style={{ height: 100, width: 100 }} ref={localVideo} autoPlay />
+  );
 };
-
 export interface pageProps {}
 export default function page({}: pageProps) {
   const [peers, setPeers] = useState<any>([]);
   const userVideo: any = useRef();
+  const otherVideo: any = useRef();
   const peersRef = useRef<any>([]);
   const peersUpdated = useRef(peers);
   const setPeersUpdated = async function (data: any) {
@@ -39,16 +34,31 @@ export default function page({}: pageProps) {
     peersUpdated.current = data;
     setPeers(data);
   };
-  let { socket } = useContext(SocketContext);
+  let { socket, peer } = useContext(SocketContext);
   const [usersOnline, setUsersOnline] = useState<any>(null);
   const [incomingCall, setIncomingCall] = useState<any>(null);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !peer) return;
     console.log(socket);
-
-    socket!.emit("join", {}, () => {});
-
+    console.log("peer", peer._id);
+    socket!.emit("join", { peer: peer._id }, () => {});
+    peer.on("call", (call: any) => {
+      console.log("call", call);
+      navigator.mediaDevices
+        .getUserMedia({
+          video: videoConstraints,
+          audio: false,
+        })
+        .then((stream) => {
+          userVideo.current!.srcObject = stream;
+          call.answer(stream);
+          call.on("stream", (remoteStream: any) => {
+            // otherVideo.current!.srcObject = remoteStream;
+            setPeersUpdated(remoteStream);
+          });
+        });
+    });
     socket.on("callStatus", (callStatus: any) => {
       console.log("callStatus", callStatus);
       setIncomingCall(callStatus);
@@ -60,84 +70,18 @@ export default function page({}: pageProps) {
         return { ...prev, [data.groupId]: data.usersOnline };
       });
     });
-    socket.on("user joined", async (payload: any) => {
-      console.log("adding peer", payload);
 
-      navigator.mediaDevices
-        .getUserMedia({
-          video: videoConstraints,
-          audio: false,
-        })
-        .then((stream: any) => {
-          userVideo.current!.srcObject = stream;
-
-          const peer = addPeer(payload.signal, payload.callerID, stream);
-          peersRef.current.push({
-            peerID: payload.callerID,
-            peer,
-          });
-
-          setPeersUpdated(peer);
-        });
-    });
-
-    socket.on("receiving returned signal", (payload: any) => {
-      const item = peersRef.current.find((p: any) => p.peerID === payload.id);
-      console.log("receiving returned signal", payload);
-      console.log("item", item);
-      console.log("payload", payload);
-      console.log("peerrefs", peersRef);
-      item.peer.signal(payload.signal);
-    });
     return () => {
       socket.off("callStatus");
       socket.off("usersOnline");
-      socket.off("user joined");
-      socket.off("all users");
+      peer.off("call");
     };
-  }, [socket]);
+  }, [socket, peer]);
   console.log(usersOnline);
 
-  function createPeer(userToSignal: any, callerID: any, stream: any) {
-    console.log("sending signal to caller id ", userToSignal);
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream,
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("sending signal", {
-        userToSignal,
-        callerID,
-        signal,
-      });
-    });
-
-    return peer;
-  }
-
-  function addPeer(incomingSignal: any, callerID: any, stream: any) {
-    userVideo.current!.srcObject = stream;
-    console.log("returning signal ", callerID);
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream,
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("returning signal", { signal, callerID });
-    });
-
-    peer.signal(incomingSignal);
-
-    return peer;
-  }
   const acceptHandler = async function () {
     socket.emit("acceptCall", { groupId: "64e6facf41af7c6169f50a9c" });
 
-    // const stream = await getStream();
     navigator.mediaDevices
       .getUserMedia({
         video: videoConstraints,
@@ -149,15 +93,12 @@ export default function page({}: pageProps) {
         const peers: any = [];
         console.log("calling to ...", incomingCall);
         incomingCall.forEach((user: any) => {
-          if (user.clientId == socket.id) return;
-          const peer = createPeer(user.clientId, socket.id, stream);
-          peersRef.current.push({
-            peerID: user.clientId,
-            peer,
+          const call = peer.call(user.clientId, stream);
+          call.on("stream", (remoteStream: any) => {
+            // otherVideo.current!.srcObject = remoteStream;
+            setPeersUpdated(remoteStream);
           });
-          peers.push(peer);
         });
-        setPeersUpdatedSingle(peers);
       });
   };
 
@@ -177,8 +118,9 @@ export default function page({}: pageProps) {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
       <video muted ref={userVideo} autoPlay playsInline />
-      {peersUpdated.current.map((peer: any, index: any) => {
-        return <Video key={index} peer={peer} />;
+      {/* <video muted ref={otherVideo} autoPlay playsInline /> */}
+      {peersUpdated.current.map((stream: any, index: any) => {
+        return <Video key={index} stream={stream} />;
       })}
       <button onClick={startHandler}>start video call</button>
       <button onClick={clearHandler}>clear video call</button>

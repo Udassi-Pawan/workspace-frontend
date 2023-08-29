@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-
-import { Peer } from "peerjs";
 import { SocketContext } from "../components/SocketProvider";
 
 const videoConstraints = {
@@ -46,7 +44,6 @@ export default function page({}: pageProps) {
         })
         .then((stream) => {
           userVideo.current!.srcObject = stream;
-
           call.answer(stream);
           call.on("stream", (remoteStream: any) => {
             otherVideo.current!.srcObject = remoteStream;
@@ -66,7 +63,7 @@ export default function page({}: pageProps) {
       .then((stream: any) => {
         userVideo.current!.srcObject = stream;
 
-        const call: any = peer.call(otherPeerId.current.value, stream);
+        const call = peer.call(otherPeerId.current.value, stream);
         call.on("stream", (remoteStream: any) => {
           otherVideo.current!.srcObject = remoteStream;
         });
@@ -79,23 +76,25 @@ export default function page({}: pageProps) {
         audio: true,
       })
       .then((stream: any) => {
-        userVideo.current!.srcObject = stream;
-
         const call: any = peer.call(otherPeerId.current.value, stream);
         call.on("stream", (remoteStream: any) => {
           other2Video.current!.srcObject = remoteStream;
         });
       });
   };
+  const clearHandler = async function () {
+    socket.emit("clearCall", { groupId: "64e6facf41af7c6169f50a9c" }, () => {});
+  };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
       <input ref={otherPeerId} placeholder="other peer id"></input>
       <video muted ref={userVideo} autoPlay playsInline />
       <video muted ref={otherVideo} autoPlay playsInline />
       <video muted ref={other2Video} autoPlay playsInline />
       <button onClick={startHandler}>start</button>
       <button onClick={start2Handler}>start2</button>
-    </>
+      <button onClick={clearHandler}>clear</button>
+    </div>
   );
 }
