@@ -15,6 +15,7 @@ const Video = (props: any) => {
   useEffect(() => {
     props.peer.on("stream", (stream: any) => {
       ref.current!.srcObject = stream;
+      console.log(stream);
     });
     return () => {
       props.peer.off("stream");
@@ -29,16 +30,18 @@ export default function page({}: pageProps) {
   const [peers, setPeers] = useState<any>([]);
   const userVideo: any = useRef();
   const peersRef = useRef<any>([]);
+  const peersUpdated = useRef(peers);
+  const setPeersUpdated = async function (data: any) {
+    peersUpdated.current = [...peersUpdated.current, data];
+    setPeers((users: any) => [...users, data]);
+  };
+  const setPeersUpdatedSingle = async function (data: any) {
+    peersUpdated.current = data;
+    setPeers(data);
+  };
   let { socket } = useContext(SocketContext);
   const [usersOnline, setUsersOnline] = useState<any>(null);
   const [incomingCall, setIncomingCall] = useState<any>(null);
-  async function getStream() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
-      audio: false,
-    });
-    return stream;
-  }
 
   useEffect(() => {
     if (!socket) return;
@@ -51,31 +54,31 @@ export default function page({}: pageProps) {
       setIncomingCall(callStatus);
     });
 
-    socket?.on("usersOnline", (data: any) => {
+    socket.on("usersOnline", (data: any) => {
       console.log(data);
       setUsersOnline((prev: any) => {
         return { ...prev, [data.groupId]: data.usersOnline };
       });
     });
-    socket!.on("all users", (users: any) => {});
-    let stream: any;
-    (async function () {
-      stream = await getStream();
-    })();
-
     socket.on("user joined", async (payload: any) => {
-      console.log("user joined", payload);
+      console.log("adding peer", payload);
 
-      const stream = await getStream();
-      userVideo.current!.srcObject = stream;
+      navigator.mediaDevices
+        .getUserMedia({
+          video: videoConstraints,
+          audio: false,
+        })
+        .then((stream: any) => {
+          userVideo.current!.srcObject = stream;
 
-      const peer = addPeer(payload.signal, payload.callerID, stream);
-      peersRef.current.push({
-        peerID: payload.callerID,
-        peer,
-      });
+          const peer = addPeer(payload.signal, payload.callerID, stream);
+          peersRef.current.push({
+            peerID: payload.callerID,
+            peer,
+          });
 
-      setPeers((users: any) => [...users, peer]);
+          setPeersUpdated(peer);
+        });
     });
 
     socket.on("receiving returned signal", (payload: any) => {
@@ -133,26 +136,35 @@ export default function page({}: pageProps) {
   }
   const acceptHandler = async function () {
     socket.emit("acceptCall", { groupId: "64e6facf41af7c6169f50a9c" });
-    const stream = await getStream();
-    userVideo.current!.srcObject = stream;
 
-    const peers: any = [];
-    incomingCall.forEach((user: any) => {
-      if (user.clientId == socket.id) return;
-      const peer = createPeer(user.clientId, socket.id, stream);
-      peersRef.current.push({
-        peerID: user.clientId,
-        peer,
+    // const stream = await getStream();
+    navigator.mediaDevices
+      .getUserMedia({
+        video: videoConstraints,
+        audio: false,
+      })
+      .then((stream: any) => {
+        userVideo.current!.srcObject = stream;
+
+        const peers: any = [];
+        console.log("calling to ...", incomingCall);
+        incomingCall.forEach((user: any) => {
+          if (user.clientId == socket.id) return;
+          const peer = createPeer(user.clientId, socket.id, stream);
+          peersRef.current.push({
+            peerID: user.clientId,
+            peer,
+          });
+          peers.push(peer);
+        });
+        setPeersUpdatedSingle(peers);
       });
-      peers.push(peer);
-    });
-    setPeers(peers);
   };
 
   const startHandler = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: videoConstraints,
-      audio: true,
+      audio: false,
     });
     userVideo.current!.srcObject = stream;
     socket.emit("startCall", { groupId: "64e6facf41af7c6169f50a9c" });
@@ -165,7 +177,7 @@ export default function page({}: pageProps) {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
       <video muted ref={userVideo} autoPlay playsInline />
-      {peers.map((peer: any, index: any) => {
+      {peersUpdated.current.map((peer: any, index: any) => {
         return <Video key={index} peer={peer} />;
       })}
       <button onClick={startHandler}>start video call</button>

@@ -8,12 +8,14 @@ export interface SocketProviderProps {
 }
 
 import { createContext, useState } from "react";
+import Peer from "peerjs";
 
 const SocketContext = createContext<any>(null);
 export { SocketContext };
 
 export function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<any>(null);
+  const [peer, setPeer] = useState<any>(null);
   const { data: session } = useSession();
   //   console.log("session in ", session);
   useEffect(() => {
@@ -28,12 +30,15 @@ export function SocketProvider({ children }: SocketProviderProps) {
         },
       });
       setSocket(client);
+      setTimeout(function () {
+        const mypeer = new Peer(client.id);
+        setPeer(mypeer);
+      }, 100);
     }
-    // console.log("socket rebuilding");
   }, [typeof session]);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket, peer }}>
       {children}
     </SocketContext.Provider>
   );
