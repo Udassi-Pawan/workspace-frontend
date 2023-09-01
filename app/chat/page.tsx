@@ -1,16 +1,8 @@
 "use client";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useSession } from "next-auth/react";
-import {
-  MutableRefObject,
-  use,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { io } from "socket.io-client";
 import { setUser } from "@/redux/features/user-slice";
 import { SocketContext } from "../components/SocketProvider";
 export interface pageProps {}
@@ -25,20 +17,8 @@ export default function Page({}: pageProps) {
   const { data: session } = useSession();
   const dispatch = useDispatch<AppDispatch>();
   const userFromDb = useAppSelector((state) => state.userReducer.user);
-  console.log(userFromDb);
-  // let socket = io("http://127.0.0.1:3333", {
-  //   transportOptions: {
-  //     polling: {
-  //       extraHeaders: {
-  //         Authorization: `Bearer ${session?.authToken}`,
-  //       },
-  //     },
-  //   },
-  // });
   let { socket } = useContext(SocketContext);
-  console.log(socket?.id);
   const getUserData = async function () {
-    console.log(session);
     const userData = await fetch(
       `http://localhost:3333/users/${session?.user?.email}`
     );
@@ -50,6 +30,7 @@ export default function Page({}: pageProps) {
     dispatch(setUser(dbUser));
   };
   useEffect(() => {
+    if (userFromDb?.name) console.log("userFromDb", userFromDb);
     getUserData();
     socket?.emit("join", {}, () => {
       setJoined(true);
@@ -96,13 +77,6 @@ export default function Page({}: pageProps) {
       }
     );
   };
-  // let timeout;
-  // const emitTyping = async function () {
-  //   socket.emit("typing", { isTyping: true });
-  //   timeout = setTimeout(() => {
-  //     socket.emit("typing", { isTyping: false });
-  //   }, 2000);
-  // };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
