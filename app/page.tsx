@@ -23,7 +23,7 @@ export default async function Page({}: pageProps) {
       ))}
 
       <h1 className="">other groups</h1>
-      {_allGroups.map((g: any) => (
+      {_allGroups?.map((g: any) => (
         <div className="">
           {!g.members.find((m: any) => m.email == session.user.email) && (
             <Link href={`/group/${g._id}`}>

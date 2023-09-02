@@ -10,4 +10,12 @@ type Group = {
 
   name: string;
   members: User[];
+  history: Message[];
+};
+
+type Message = {
+  sender: string;
+  timestamp: number;
+  text: string;
+  senderName: string;
 };

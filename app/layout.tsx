@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { SessProvider } from "./components/SessProvider";
 import { ReduxProvider } from "@/redux/provider";
 import { SocketProvider } from "./components/SocketProvider";
+import Wrapper from "./components/Wrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ReduxProvider>
           <SessProvider>
-            <SocketProvider>{children}</SocketProvider>
+            <SocketProvider>
+              <Wrapper>{children}</Wrapper>
+            </SocketProvider>
           </SessProvider>
         </ReduxProvider>
       </body>

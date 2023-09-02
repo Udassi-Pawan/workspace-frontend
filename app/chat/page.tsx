@@ -33,31 +33,31 @@ export default function Page({}: pageProps) {
     } catch (e) {}
     dispatch(setUser(dbUser));
   };
-  useEffect(() => {
-    if (userFromDb?.name) console.log("userFromDb", userFromDb);
+  //   useEffect(() => {
+  //     if (userFromDb?.name) console.log("userFromDb", userFromDb);
 
-    getUserData();
-    socket?.emit("join", {}, () => {
-      setJoined(true);
-    });
-    socket?.emit("findAllChat", {}, (mess: any) => {
-      setMessages(mess);
-      console.log(mess);
-    });
-    socket?.on("messsage", (msg: messageType) => {
-      setMessages((prev) => [...prev, msg]);
-      console.log(msg, "received");
-      return "received";
-    });
-    socket?.on("usersOnline", (data: any) => {
-      console.log(data);
-    });
+  //     getUserData();
+  //     socket?.emit("join", {}, () => {
+  //       setJoined(true);
+  //     });
+  //     socket?.emit("findAllChat", {}, (mess: any) => {
+  //       setMessages(mess);
+  //       console.log(mess);
+  //     });
+  //     socket?.on("messsage", (msg: messageType) => {
+  //       setMessages((prev) => [...prev, msg]);
+  //       console.log(msg, "received");
+  //       return "received";
+  //     });
+  //     socket?.on("usersOnline", (data: any) => {
+  //       console.log(data);
+  //     });
 
-    console.log(socket);
-    return () => {
-      socket?.off("message");
-    };
-  }, [session, socket]);
+  //     console.log(socket);
+  //     return () => {
+  //       socket?.off("message");
+  //     };
+  //   }, [session, socket]);
   const [messages, setMessages] = useState<
     { name: string; text: string; groupId: string }[]
   >([]);
