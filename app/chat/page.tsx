@@ -15,10 +15,14 @@ interface messageType {
 
 export default function Page({}: pageProps) {
   const { data: session } = useSession();
+  const [allGroups, setAllGroups] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
   const userFromDb = useAppSelector((state) => state.userReducer.user);
   let { socket } = useContext(SocketContext);
   const getUserData = async function () {
+    const _allGroups = await fetch("httpL//localhost:3333/group/all");
+    setAllGroups(_allGroups);
+
     const userData = await fetch(
       `http://localhost:3333/users/${session?.user?.email}`
     );
@@ -31,6 +35,7 @@ export default function Page({}: pageProps) {
   };
   useEffect(() => {
     if (userFromDb?.name) console.log("userFromDb", userFromDb);
+
     getUserData();
     socket?.emit("join", {}, () => {
       setJoined(true);
