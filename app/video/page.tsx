@@ -36,7 +36,6 @@ export default function page({}: pageProps) {
     if (!socket || !peer) return;
     console.log(socket);
     console.log("peer", peer._id);
-    socket!.emit("join", { peer: peer._id }, () => {});
     peer.on("call", (call: any) => {
       console.log("call", call);
       navigator.mediaDevices
@@ -52,17 +51,17 @@ export default function page({}: pageProps) {
           });
         });
     });
-    socket.on("callStatus", (callStatus: any) => {
-      console.log("callStatus", callStatus);
-      setIncomingCall(callStatus);
-    });
+    // socket.on("callStatus", (callStatus: any) => {
+    //   console.log("callStatus", callStatus);
+    //   setIncomingCall(callStatus);
+    // });
 
-    socket.on("usersOnline", (data: any) => {
-      console.log(data);
-      setUsersOnline((prev: any) => {
-        return { ...prev, [data.groupId]: data.usersOnline };
-      });
-    });
+    // socket.on("usersOnline", (data: any) => {
+    //   console.log(data);
+    //   setUsersOnline((prev: any) => {
+    //     return { ...prev, [data.groupId]: data.usersOnline };
+    //   });
+    // });
 
     return () => {
       socket.off("callStatus");
@@ -73,7 +72,7 @@ export default function page({}: pageProps) {
   console.log(usersOnline);
 
   const acceptHandler = async function () {
-    socket.emit("acceptCall", { groupId: "64e6facf41af7c6169f50a9c" });
+    socket.emit("acceptCall", { groupId: "64f32331bd225d3680a054d2" });
 
     navigator.mediaDevices
       .getUserMedia({
@@ -84,7 +83,7 @@ export default function page({}: pageProps) {
         userVideo.current!.srcObject = stream;
 
         console.log("calling to ...", incomingCall);
-        incomingCall.forEach((user: any) => {
+        incomingCall["64f32331bd225d3680a054d2"].forEach((user: any) => {
           const call = peer.call(user.clientId, stream);
           call.on("stream", (remoteStream: any) => {
             setPeersUpdated(remoteStream);
@@ -99,11 +98,11 @@ export default function page({}: pageProps) {
       audio: false,
     });
     userVideo.current!.srcObject = stream;
-    socket.emit("startCall", { groupId: "64e6facf41af7c6169f50a9c" });
+    socket.emit("startCall", { groupId: "64f32331bd225d3680a054d2" });
   };
 
   const clearHandler = async function () {
-    socket.emit("clearCall", { groupId: "64e6facf41af7c6169f50a9c" }, () => {});
+    socket.emit("clearCall", { groupId: "64f32331bd225d3680a054d2" }, () => {});
   };
 
   return (
