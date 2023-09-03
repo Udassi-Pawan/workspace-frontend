@@ -4,8 +4,11 @@ import { SocketContext } from "@/app/components/SocketProvider";
 import { useContext, useEffect, useState } from "react";
 import Online from "@/app/components/Online";
 import Chat from "@/app/components/Chat";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { groupId: string } }) {
+  const router = useRouter();
+
   let { socket } = useContext(SocketContext);
   const [group, setGroup] = useState<Group | null>(null);
   const [usersOnline, setUsersOnline] = useState<User[] | null>(null);
@@ -37,9 +40,9 @@ export default function Page({ params }: { params: { groupId: string } }) {
     });
   }, [socket, group?._id]);
 
-  const acceptHandler = async function () {};
-  const startHandler = async function () {};
-
+  const vidoeHandler = async function () {
+    router.push(`/video/${params.groupId}`);
+  };
   return (
     <div className="">
       <Online members={group?.members} usersOnline={usersOnline!}></Online>
@@ -50,8 +53,11 @@ export default function Page({ params }: { params: { groupId: string } }) {
           {g.name}
         </p>
       ))}
-      {JSON.stringify(thisGroupCallStatus) != "{}" &&
-        thisGroupCallStatus != undefined && <button>Accept Call</button>}
+      {thisGroupCallStatus?.length != 0 && thisGroupCallStatus != undefined ? (
+        <button onClick={vidoeHandler}>Accept Call</button>
+      ) : (
+        <button onClick={vidoeHandler}>Start Call</button>
+      )}
     </div>
   );
 }
