@@ -109,8 +109,8 @@ export default function page({ params }: { params: { groupId: string } }) {
     });
 
     return () => {
-      socket.off("callStatus");
-      socket.off("usersOnline");
+      socket.off(`callStatus${params.groupId}`);
+      socket.off(`usersOnline${params.groupId}`);
       peer.off("call");
     };
   }, [socket, peer]);
@@ -155,7 +155,6 @@ export default function page({ params }: { params: { groupId: string } }) {
   };
 
   const turnVideoOffHandler = async function () {
-    socket.emit(`endCall`, { groupId: params.groupId });
     myStreamsUpdated.current.forEach(async (_stream: any) => {
       await _stream.getTracks().forEach((track: any) => track.stop());
     });
@@ -172,7 +171,7 @@ export default function page({ params }: { params: { groupId: string } }) {
     thisGroupCallStatus.forEach((user: any) => {
       console.log("calling", user.clientId, "now");
       if (user.clientId == socket.id) return;
-      const call = peer.call(user.clientId, _stream, {
+      peer.call(user.clientId, _stream, {
         metadata: { name: session?.user!.name, returnVideo: false },
       });
     });
@@ -190,7 +189,12 @@ export default function page({ params }: { params: { groupId: string } }) {
     });
   }
 
-  async function endHandler() {}
+  async function endHandler() {
+    socket.emit(`endCall`, { groupId: params.groupId });
+    turnVideoOffHandler();
+    router.push(`/group/${params.groupId}`);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
       <video muted ref={userVideo} autoPlay playsInline />
