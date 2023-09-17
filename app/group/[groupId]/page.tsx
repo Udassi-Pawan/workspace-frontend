@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import Online from "@/app/components/Online";
 import Chat from "@/app/components/Chat";
 import { useRouter } from "next/navigation";
+import Collab from "@/app/components/Collab";
 
 export default function Page({ params }: { params: { groupId: string } }) {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
 
   useEffect(() => {
     if (!group) return;
-    socket.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
+    socket?.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
     socket.on(`usersOnline${group?._id}`, userOnlineHandler);
     socket.on(`callStatus${group?._id}`, (_callStatus: any) => {
       console.log("received callstatus", _callStatus);
@@ -58,6 +59,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
       ) : (
         <button onClick={vidoeHandler}>Start Call</button>
       )}
+      <Collab groupId={group?._id!} docs={group?.docs!} />
     </div>
   );
 }

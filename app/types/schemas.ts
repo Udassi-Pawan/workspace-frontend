@@ -11,6 +11,7 @@ type Group = {
   name: string;
   members: User[];
   history: Message[];
+  docs: string[];
 };
 
 type Message = {
@@ -18,4 +19,5 @@ type Message = {
   timestamp: number;
   text: string;
   senderName: string;
+  image: string;
 };
