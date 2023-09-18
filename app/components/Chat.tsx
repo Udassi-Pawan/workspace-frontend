@@ -1,5 +1,6 @@
 import React, {
   ChangeEvent,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -56,10 +57,6 @@ export default function Chat({ groupId, _chatHistory }: ChatProps) {
       console.log(reader.result);
       image = reader.result!;
     };
-  };
-
-  const emojiHandler = async function (emoji: { emoji: string }) {
-    setNewMessageText((prev) => prev + emoji.emoji);
   };
 
   return (

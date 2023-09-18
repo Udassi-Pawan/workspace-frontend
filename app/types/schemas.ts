@@ -3,11 +3,12 @@ type User = {
   name: string;
   email: string;
   groups: Group[];
+  files: FileType[];
 };
 
 type Group = {
   _id: string;
-
+  files: FileType[];
   name: string;
   members: User[];
   history: Message[];
@@ -20,4 +21,13 @@ type Message = {
   text: string;
   senderName: string;
   image: string;
+};
+
+type FileType = {
+  owner: string;
+  name: string;
+  type: string;
+  extension: string;
+  timestamp: number;
+  _id: string;
 };

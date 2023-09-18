@@ -6,6 +6,7 @@ import Online from "@/app/components/Online";
 import Chat from "@/app/components/Chat";
 import { useRouter } from "next/navigation";
 import Collab from "@/app/components/Collab";
+import GroupDrive from "@/app/components/GroupDrive";
 
 export default function Page({ params }: { params: { groupId: string } }) {
   const router = useRouter();
@@ -60,6 +61,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
         <button onClick={vidoeHandler}>Start Call</button>
       )}
       <Collab groupId={group?._id!} docs={group?.docs!} />
+      <GroupDrive groupId={group?._id!} files={group?.files!} />
     </div>
   );
 }
