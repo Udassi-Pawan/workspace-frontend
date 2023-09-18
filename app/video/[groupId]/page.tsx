@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { SocketContext } from "../../components/SocketProvider";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 
 const videoConstraints = {
   height: window.innerHeight / 2,
@@ -17,6 +18,7 @@ const displayMediaOptions = {
 };
 const Video = ({ stream }: { stream: any }) => {
   const localVideo = React.createRef<any>();
+
   const [show, setShow] = useState(true);
 
   useEffect(() => {
@@ -46,6 +48,10 @@ const Video = ({ stream }: { stream: any }) => {
 };
 export interface pageProps {}
 export default function page({ params }: { params: { groupId: string } }) {
+  const canvasRef = useRef<any>();
+  const contextRef = useRef<any>();
+  const inputVideoRef = useRef<any>();
+
   const { data: session } = useSession();
   const router = useRouter();
   const [myStreams, setMyStreams] = useState<any>([]);
@@ -65,6 +71,8 @@ export default function page({ params }: { params: { groupId: string } }) {
   let { socket, peer } = useContext(SocketContext);
   const [usersOnline, setUsersOnline] = useState<any>(null);
   const [thisGroupCallStatus, setThisGroupCallStatus] = useState<any>(null);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (!socket || !peer) return;
@@ -142,6 +150,96 @@ export default function page({ params }: { params: { groupId: string } }) {
       });
   };
 
+  const acceptBlackHandler = async function () {
+    turnVideoOffHandler();
+    contextRef.current = canvasRef.current?.getContext("2d");
+    const constraints = {
+      video: { width: { min: 1280 }, height: { min: 720 } },
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      inputVideoRef.current.srcObject = stream;
+      sendToMediaPipe();
+    });
+
+    const selfieSegmentation = new SelfieSegmentation({
+      locateFile: (file) =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`,
+    });
+
+    selfieSegmentation.setOptions({
+      modelSelection: 1,
+      selfieMode: false,
+    });
+
+    selfieSegmentation.onResults(onResults);
+
+    const sendToMediaPipe = async () => {
+      if (!inputVideoRef.current.videoWidth) {
+        console.log(inputVideoRef.current.videoWidth);
+        requestAnimationFrame(sendToMediaPipe);
+      } else {
+        await selfieSegmentation.send({ image: inputVideoRef.current });
+        requestAnimationFrame(sendToMediaPipe);
+      }
+    };
+
+    const canvasStream = canvasRef.current.captureStream();
+    setMyStreamsUpdated(canvasStream);
+
+    thisGroupCallStatus.forEach((user: any) => {
+      console.log("calling", user.clientId, "now");
+      const call = peer.call(user.clientId, canvasStream, {
+        metadata: { name: session?.user!.name, returnVideo: false },
+      });
+      setOnCall(call);
+      call.on("stream", (remoteStream: any) => {
+        setPeersUpdated({
+          stream: remoteStream,
+          metadata: { name: user.name },
+        });
+      });
+    });
+  };
+  const onResults = (results: any) => {
+    contextRef.current.save();
+    contextRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    contextRef.current.drawImage(
+      results.segmentationMask,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    // Only overwrite existing pixels.
+    contextRef.current.globalCompositeOperation = "source-out";
+    contextRef.current.fillStyle = "#000923";
+    // contextRef.current.fillStyle = "#00FF06";
+    contextRef.current.fillRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    // Only overwrite missing pixels.
+    contextRef.current.globalCompositeOperation = "destination-atop";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.restore();
+    // console.log(canvasStream);
+  };
+
   const startHandler = async () => {
     setOnCall(true);
 
@@ -204,14 +302,22 @@ export default function page({ params }: { params: { groupId: string } }) {
       {!onCall &&
       thisGroupCallStatus?.length != 0 &&
       thisGroupCallStatus != undefined ? (
-        <button onClick={acceptHandler}>Accept Call</button>
+        <div className="">
+          <button onClick={acceptHandler}>Accept Call</button>
+        </div>
       ) : (
         <button onClick={startHandler}>Start Call</button>
       )}
       {onCall && <button onClick={turnVideoOffHandler}>turn video off</button>}
+      <button onClick={acceptBlackHandler}>turn on blur background</button>
+
       <button onClick={turnVideoOnHandler}> turn video on </button>
       <button onClick={shareScreenHandler}> share Screen </button>
       <button onClick={endHandler}> end call </button>
+      <div className="">
+        <video hidden autoPlay ref={inputVideoRef} />
+        <canvas ref={canvasRef} width={1280} height={720} />
+      </div>
     </div>
   );
 }

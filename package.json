@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.414.0",
     "@hocuspocus/provider": "^2.4.0",
+    "@mediapipe/selfie_segmentation": "^0.1.1675465747",
     "@reduxjs/toolkit": "^1.9.5",
     "@tiptap/extension-collaboration": "^2.1.7",
     "@tiptap/extension-collaboration-cursor": "^2.1.10",
