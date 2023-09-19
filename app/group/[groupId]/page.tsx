@@ -35,8 +35,8 @@ export default function Page({ params }: { params: { groupId: string } }) {
   useEffect(() => {
     if (!group) return;
     socket?.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
-    socket.on(`usersOnline${group?._id}`, userOnlineHandler);
-    socket.on(`callStatus${group?._id}`, (_callStatus: any) => {
+    socket?.on(`usersOnline${group?._id}`, userOnlineHandler);
+    socket?.on(`callStatus${group?._id}`, (_callStatus: any) => {
       console.log("received callstatus", _callStatus);
       setThisGroupCallStatus(_callStatus);
     });

@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 export interface GroupDriveProps {
   groupId: string;
   files: FileType[];
 }
 export default function GroupDrive({ groupId, files }: GroupDriveProps) {
+  const [videoLink, setVideoLink] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const { data: session } = useSession();
   const uploadFileRef = useRef<any>(null);
   const uploadHandler = async function () {
@@ -45,6 +47,11 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
       }
     );
     console.log(data);
+    setVideoLink(data);
+    setTimeout(() => {
+      videoRef.current?.load();
+      videoRef.current?.play();
+    }, 200);
   };
 
   return (
@@ -62,6 +69,15 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
             </button>
           </div>
         ))}
+        <video
+          ref={videoRef}
+          width={"320"}
+          height={"240"}
+          controls
+          // preload="auto"
+        >
+          <source src={videoLink!} type={"video/mp4"}></source>
+        </video>
       </div>
     </div>
   );

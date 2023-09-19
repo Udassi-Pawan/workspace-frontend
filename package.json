@@ -34,8 +34,10 @@
     "next": "13.4.16",
     "next-auth": "^4.23.0",
     "peerjs": "^1.4.7",
+    "perfect-freehand": "^1.2.0",
     "postcss": "8.4.28",
     "react": "18.2.0",
+    "react-color": "^2.19.3",
     "react-dom": "18.2.0",
     "react-redux": "^8.1.2",
     "sass": "^1.66.1",
@@ -44,9 +46,9 @@
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6",
     "y-prosemirror": "^1.0.20",
-    "y-webrtc": "^10.1.8",
+    "y-webrtc": "^10.2.5",
     "y-websocket": "^1.5.0",
-    "yjs": "^13.6.7"
+    "yjs": "^13.6.8"
   },
   "devDependencies": {
     "@types/simple-peer": "^9.11.5"

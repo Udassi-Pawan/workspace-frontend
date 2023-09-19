@@ -21,6 +21,7 @@ type Message = {
   text: string;
   senderName: string;
   image: string;
+  video : string
 };
 
 type FileType = {
