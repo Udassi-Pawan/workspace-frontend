@@ -5,6 +5,7 @@ import { SessProvider } from "./components/SessProvider";
 import { ReduxProvider } from "@/redux/provider";
 import { SocketProvider } from "./components/SocketProvider";
 import Wrapper from "./components/Wrapper";
+import DialogflowMessenger from "./bot/page";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +21,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
       <body className={inter.className}>
         <ReduxProvider>
           <SessProvider>
             <SocketProvider>
               <Wrapper>{children}</Wrapper>
             </SocketProvider>
+            <DialogflowMessenger />
           </SessProvider>
         </ReduxProvider>
       </body>

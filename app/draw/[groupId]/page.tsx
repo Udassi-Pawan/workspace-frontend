@@ -3,7 +3,6 @@ import { FC, useContext, useEffect, useState } from "react";
 import { useDraw } from "@/app/hooks/useDraw";
 import { ChromePicker } from "react-color";
 
-import { io } from "socket.io-client";
 import { drawLine } from "@/app/utils/drawLine";
 import { SocketContext } from "@/app/components/SocketProvider";
 
