@@ -26,7 +26,7 @@ const Signin = () => {
   }
   return (
     <div className="flex items-center justify-center h-screen">
-      <button className="" onClick={async () => await signIn()}>
+      <button className="" onClick={async () => await signIn("google")}>
         signin
       </button>
     </div>

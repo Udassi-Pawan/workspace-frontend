@@ -2,11 +2,15 @@
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { redirect } from "next/navigation";
 
 export interface pageProps {}
 export default function page({}: pageProps) {
   const { data: session } = useSession();
   console.log(session);
+  if (session == null) {
+    return redirect("/login");
+  }
   const groupName = useRef<HTMLInputElement>(null);
   const [allUsers, setAllUsers] = useState<User[] | null>(null);
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function page({}: pageProps) {
       <input ref={groupName} placeholder="name" />{" "}
       <button onClick={createHandler}>create</button>
       {allUsers?.map((u) =>
-        u.email == session?.user.email ? null : (
+        u.email == session?.user!.email ? null : (
           <div key={u._id} className="">
             <input type="checkbox" id={"member " + u._id} value={u._id} />
             <label> {u.name} </label>

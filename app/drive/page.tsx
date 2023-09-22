@@ -19,10 +19,10 @@ export default function page({}: DriveProps) {
   };
 
   useEffect(() => {
-    if (!session?.user.email) return;
+    if (!session?.user!.email) return;
     (async function () {
       const { data } = await axios.get(
-        "http://localhost:3333/users/" + session?.user.email
+        "http://localhost:3333/users/" + session?.user!.email
       );
       console.log(data);
       setUser(data);

@@ -17,6 +17,9 @@ const handler = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
   // session: {
   //   maxAge: 3600,
   // },
@@ -24,9 +27,9 @@ const handler = NextAuth({
   //   maxAge: 3600,
   // },
   callbacks: {
-    // async redirect({ url, baseUrl }) {
-    //   return "/home";
-    // },
+    async redirect({ url, baseUrl }) {
+      return "/";
+    },
     async jwt({ token, account, user }) {
       if (account) {
         const res = await fetch("http://localhost:3333/auth/login", {
@@ -62,4 +65,4 @@ const handler = NextAuth({
   },
 });
 
-export { handler as GET, handler as POST ,handler};
+export { handler as GET, handler as POST, handler };
