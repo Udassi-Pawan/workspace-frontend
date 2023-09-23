@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 
 function DialogflowMessenger() {
   const { data: session } = useSession();
+  return null;
   if (session)
     return (
       <df-messenger

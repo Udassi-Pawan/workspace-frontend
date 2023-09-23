@@ -7,10 +7,11 @@ import Chat from "@/app/components/Chat";
 import { useRouter } from "next/navigation";
 import Collab from "@/app/components/Collab";
 import GroupDrive from "@/app/components/GroupDrive";
+import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 
 export default function Page({ params }: { params: { groupId: string } }) {
   const router = useRouter();
-
   let { socket } = useContext(SocketContext);
   const [group, setGroup] = useState<Group | null>(null);
   const [usersOnline, setUsersOnline] = useState<User[] | null>(null);
@@ -25,6 +26,11 @@ export default function Page({ params }: { params: { groupId: string } }) {
     }
     getData();
   }, []);
+  const { setTheme, theme } = useTheme();
+  const themeHandler = async function () {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+  };
 
   const userOnlineHandler = ({ usersOnline, callStatus }: any) => {
     setUsersOnline(usersOnline);
@@ -42,15 +48,24 @@ export default function Page({ params }: { params: { groupId: string } }) {
     });
   }, [socket, group?._id]);
 
-  const vidoeHandler = async function () {
-    router.push(`/video/${params.groupId}`);
-  };
   return (
-    <div className="">
-      <Online members={group?.members} usersOnline={usersOnline!}></Online>
-      <Chat groupId={group?._id!} _chatHistory={group?.history!}></Chat>
-      <h1>call status</h1>
-      {thisGroupCallStatus?.map((g: any) => (
+    <div className="flex">
+      {/* <Online members={group?.members} usersOnline={usersOnline!}></Online> */}
+      <Chat
+        groupId={group?._id!}
+        groupName={group?.name!}
+        messages={group?.history!}
+      ></Chat>
+      <button onClick={themeHandler}>toggle</button>
+
+      {/* <Chat
+        groupId={group?._id!}
+        groupName={group?.name!}
+        messages={group?.history!}
+      ></Chat> */}
+
+      {/* <h1>call status</h1> */}
+      {/* {thisGroupCallStatus?.map((g: any) => (
         <p key={g.email} className="">
           {g.name}
         </p>
@@ -61,7 +76,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
         <button onClick={vidoeHandler}>Start Call</button>
       )}
       <Collab groupId={group?._id!} docs={group?.docs!} />
-      <GroupDrive groupId={group?._id!} files={group?.files!} />
+      <GroupDrive groupId={group?._id!} files={group?.files!} /> */}
     </div>
   );
 }
