@@ -6,8 +6,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const mobileBreakpoint = 550; // Example breakpoint for mobile devices
-  const [centerMode, setCenterMode] = useState(false); // Initialize with false for mobile
+  const mobileBreakpoint = 550;
+  const [centerMode, setCenterMode] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -18,18 +18,14 @@ export default function Home() {
       }
     };
 
-    // Add a listener for the window resize event
     window.addEventListener("resize", handleResize);
 
-    // Initial check on component mount
     handleResize();
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []); // Empty dependency array to run this effect only once on mount
-
+  }, []);
   const { setTheme, theme } = useTheme();
   const themeHandler = async function () {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -61,35 +57,38 @@ export default function Home() {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 3,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
     tablet: {
       breakpoint: { max: 1024, min: 780 },
       items: 2,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
     mobile: {
       breakpoint: { max: 780, min: 0 },
       items: 1,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
   };
   return (
     <div>
       <button onClick={themeHandler}>toggle</button>
 
-      <div className="flex flex-col items-center flex-start justify-start gap-8">
-        <h5 className="mt-2">Workspace</h5>
-        <div className="text-center flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center flex-start justify-start gap-2">
+        <h5 className="mt-0 mb-5 font-bold">Workspace</h5>
+        <div className="mb-2 text-center flex flex-col items-center justify-center">
           <h1 className="text-6xl font-semibold"> All your work needs,</h1>
           <h1 className="text-6xl font-semibold"> at one place</h1>
         </div>
+        <h5 className="">
+          Work was never so seamless , experience the simplicity
+        </h5>
         <div />
 
         <Signin />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-14">
         <Carousel
           additionalTransfrom={0}
           arrows
