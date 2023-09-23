@@ -1,20 +1,10 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { decode } from "next-auth/jwt";
-import { useEffect } from "react";
+import { Button } from "@/shardcn/components/ui/button";
+import Image from "next/image";
 
 const Signin = () => {
   const { data: session } = useSession();
-  console.log(session);
-  // useEffect(() => {
-  //   (async () => {
-  //     const decoded = await decode({
-  //       token: session?.access_token,
-  //       secret: process.env.NEXTAUTH_SECRET,
-  //     });
-  //     // console.log(decoded);
-  //   })();
-  // });
 
   if (session && session.user) {
     return (
@@ -25,11 +15,18 @@ const Signin = () => {
     );
   }
   return (
-    <div className="flex items-center justify-center h-screen">
-      <button className="" onClick={async () => await signIn("google")}>
-        signin
-      </button>
-    </div>
+    <Button
+      onClick={async () => await signIn("google")}
+      className="flex bg-primary text-primary-foreground  gap-2 p-3 rounded-3xl"
+    >
+      <Image
+        src="/images/google.png" // Replace with the actual path to your Google logo image
+        alt="Google Logo"
+        height={"20"}
+        width={"20"}
+      />
+      Continue with Google
+    </Button>
   );
 };
 

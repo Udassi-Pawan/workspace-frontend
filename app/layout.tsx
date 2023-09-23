@@ -7,6 +7,7 @@ import { SocketProvider } from "./components/SocketProvider";
 import Wrapper from "./components/Wrapper";
 import DialogflowMessenger from "./components/DialogFlowMessenger";
 import Script from "next/script";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +25,27 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></Script>
+        <Script
+          type="module"
+          src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+        ></Script>
+        <Script
+          nomodule
+          src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+        ></Script>
+        <Script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></Script>
+
         <ReduxProvider>
           <SessProvider>
             <SocketProvider>
-              <Wrapper>{children}</Wrapper>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Wrapper>{children}</Wrapper>
+              </ThemeProvider>
             </SocketProvider>
             <DialogflowMessenger />
           </SessProvider>
