@@ -30,7 +30,7 @@ export default function RootLayout({
           src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
         ></Script>
         <Script
-          nomodule
+          noModule
           src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
         ></Script>
         <Script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></Script>
