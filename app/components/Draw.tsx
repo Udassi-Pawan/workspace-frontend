@@ -19,6 +19,7 @@ type DrawLineProps = {
 
 const Draw: FC<pageProps> = ({ groupId }) => {
   let { socket } = useContext(SocketContext);
+  console.log(groupId);
 
   const [color, setColor] = useState<string>("#000");
   const { canvasRef, onMouseDown, clear } = useDraw(createLine);
@@ -26,11 +27,13 @@ const Draw: FC<pageProps> = ({ groupId }) => {
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!socket) return;
+    console.log(socket);
     socket.emit("client-ready", {
       groupId: groupId,
     });
 
     socket.on("get-canvas-state", () => {
+      console.log("get-canvas-state");
       if (!canvasRef.current?.toDataURL()) return;
       console.log("sending canvas state");
       socket.emit("canvas-state", {
@@ -78,7 +81,7 @@ const Draw: FC<pageProps> = ({ groupId }) => {
 
   return (
     <>
-      <div className="mt-2 bg-white flex flex-col justify-center items-center">
+      <div className="mt-2  flex flex-col justify-center items-center">
         <div className="flex items-center gap-8">
           <Button
             type="button"
@@ -112,7 +115,7 @@ const Draw: FC<pageProps> = ({ groupId }) => {
             maxWidth: "100%", // Make it responsive on desktop
             width: "100%", // Make it responsive on desktop
           }}
-          className="border border-black rounded-md m-5 h-auto"
+          className="bg-gray-300 border border-black rounded-md m-5 h-auto"
         />
       </div>
     </>

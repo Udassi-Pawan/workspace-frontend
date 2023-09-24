@@ -194,18 +194,15 @@ export default function Page({
         {curPage == "drive" && (
           <GroupDrive groupId={group?._id!} files={group?.files!} />
         )}
-        {curPage == "draw" && <Draw groupId={group?._id!} />}
+        {curPage == "draw" && group?._id && <Draw groupId={group?._id!} />}
         {curPage == "docs" && (
           <Collab groupId={group?._id!} docs={group?.docs!} />
         )}
       </div>
       <GroupInfo members={group?.members} usersOnline={usersOnline!} />
+      <button onClick={themeHandler}>toggle</button>
     </div>
   );
-
-  {
-    /* <button onClick={themeHandler}>toggle</button> */
-  }
 
   {
     /* {thisGroupCallStatus?.map((g: any) => (
