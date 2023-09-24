@@ -2,16 +2,39 @@
 import axios from "axios";
 import { SocketContext } from "@/app/components/SocketProvider";
 import { useContext, useEffect, useState } from "react";
-import Online from "@/app/components/Online";
-import Chat from "@/app/components/Chat";
-import { useRouter } from "next/navigation";
-import Collab from "@/app/components/Collab";
-import GroupDrive from "@/app/components/GroupDrive";
-import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import Chat from "@/app/components/Chat";
+import GroupDrive from "@/app/components/GroupDrive";
+import { Button } from "@/shardcn/components/ui/button";
+import Image from "next/image";
+import GroupInfo from "@/app/components/GroupInfo";
+import Draw from "@/app/components/Draw";
+import Collab from "@/app/components/Collab";
 
-export default function Page({ params }: { params: { groupId: string } }) {
-  const router = useRouter();
+const menuItems = [
+  {
+    name: "chat",
+    color: "orange",
+  },
+  {
+    name: "docs",
+    color: "green",
+  },
+  {
+    name: "draw",
+    color: "red",
+  },
+  {
+    name: "drive",
+    color: "yellow",
+  },
+];
+
+export default function Page({
+  params,
+}: {
+  params: { groupId: string; page: string };
+}) {
   let { socket } = useContext(SocketContext);
   const [group, setGroup] = useState<Group | null>(null);
   const [usersOnline, setUsersOnline] = useState<User[] | null>(null);
@@ -47,25 +70,145 @@ export default function Page({ params }: { params: { groupId: string } }) {
       setThisGroupCallStatus(_callStatus);
     });
   }, [socket, group?._id]);
+  useEffect(() => {
+    setCurTheme(theme);
+  }, [theme]);
+  const [curTheme, setCurTheme] = useState(theme);
+  const [curPage, setCurPage] = useState<string>("chat");
 
   return (
     <div className="flex">
-      {/* <Online members={group?.members} usersOnline={usersOnline!}></Online> */}
-      <Chat
-        groupId={group?._id!}
-        groupName={group?.name!}
-        messages={group?.history!}
-      ></Chat>
-      <button onClick={themeHandler}>toggle</button>
+      <div className="flex-1 sm:p-3 justify-start flex flex-col h-screen">
+        <div
+          className={`flex sm:items-center justify-between  border-b-2 border-gray-${
+            curTheme == "light" ? "200" : "250"
+          }`}
+        >
+          <div className="relative flex p-2 items-center space-x-4">
+            <div className="relative">
+              <span className="absolute text-green-500 right-0 bottom-0">
+                <svg width="20" height="20">
+                  <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <img
+                src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+                alt=""
+                className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+              />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <div className="text-2xl flex items-center">
+                <span className={`mr-3`}>{group?.name}</span>
+              </div>
+              <span className={`text-md`}>description</span>
+            </div>
+          </div>
+          <>
+            {" "}
+            {menuItems.map((m) => (
+              <div key={m.name} className="hidden md:flex">
+                <Button
+                  onClick={() => setCurPage(m.name)}
+                  className={` bg-${
+                    curPage == m.name ? `${m.color}-500` : "gray-300"
+                  } text-gray-800 font-bold rounded border-b-2 border-${
+                    m.color
+                  }-500 hover:border-${m.color}-600 hover:bg-${
+                    m.color
+                  }-500 hover:text-white shadow-md py-2 px-6 inline-flex items-center`}
+                >
+                  <span className="mr-2">
+                    {m.name[0].toUpperCase() + m.name.slice(1)}
+                  </span>
+                  <Image
+                    alt=""
+                    width={"20"}
+                    height={"20"}
+                    src={"/chat.png"}
+                  ></Image>
+                </Button>
+              </div>
+            ))}
+          </>
+          <div className="flex items-center mr-2">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-3xl border transition bg-green-400 py-2 px-3  duration-500 ease-in-out text-gray-500 hover:bg-green-300 focus:outline-none"
+            >
+              <svg
+                fill="green-900"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 100 100"
+                id="video"
+              >
+                <g>
+                  <path d="M84.9 26.4L68 37.3V34c0-4.4-3.6-8-8-8H20c-4.4 0-8 3.6-8 8v32c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-3.3l16.9 10.9c1.9 1 3.1-.7 3.1-1.7V28c0-1-1.1-2.8-3.1-1.6zM64 66c0 2.2-1.8 4-4 4H20c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4h40c2.2 0 4 1.8 4 4v32zm20 2.3L68 58V42l16-10.3v36.6z"></path>
+                </g>
+                <g>
+                  <path
+                    fill="#00F"
+                    d="M1224-650v1684H-560V-650h1784m8-8H-568v1700h1800V-658z"
+                  ></path>
+                </g>
+              </svg>
+              <p className="ml-2 text-green-900">JOIN</p>
+            </button>
+          </div>
+        </div>
 
-      {/* <Chat
-        groupId={group?._id!}
-        groupName={group?.name!}
-        messages={group?.history!}
-      ></Chat> */}
+        <div className="md:hidden flex justify-between justify-self-start space-x-2 p-2 border-b-2">
+          {menuItems.map((m) => (
+            <Button
+              key={m.name}
+              onClick={() => setCurPage(m.name)}
+              className={`bg-${
+                curPage == m.name ? `${m.color}-500` : "gray-300"
+              } text-gray-800 font-bold rounded border-b-2 border-${
+                m.color
+              }-500 hover:border-${m.color}-600 hover:bg-${
+                m.color
+              }-500 hover:text-white shadow-md py-2 px-2 inline-flex items-center`}
+            >
+              <span className="mr-2">
+                {m.name[0].toUpperCase() + m.name.slice(1)}
+              </span>{" "}
+              <Image
+                alt=""
+                width={"20"}
+                height={"20"}
+                src={"/chat.png"}
+              ></Image>
+            </Button>
+          ))}
+        </div>
+        {curPage == "chat" && (
+          <Chat
+            messages={group?.history!}
+            groupId={group?._id!}
+            curTheme={theme!}
+          />
+        )}
+        {curPage == "drive" && (
+          <GroupDrive groupId={group?._id!} files={group?.files!} />
+        )}
+        {curPage == "draw" && <Draw groupId={group?._id!} />}
+        {curPage == "docs" && (
+          <Collab groupId={group?._id!} docs={group?.docs!} />
+        )}
+      </div>
+      <GroupInfo members={group?.members} usersOnline={usersOnline!} />
+    </div>
+  );
 
-      {/* <h1>call status</h1> */}
-      {/* {thisGroupCallStatus?.map((g: any) => (
+  {
+    /* <button onClick={themeHandler}>toggle</button> */
+  }
+
+  {
+    /* {thisGroupCallStatus?.map((g: any) => (
         <p key={g.email} className="">
           {g.name}
         </p>
@@ -75,8 +218,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
       ) : (
         <button onClick={vidoeHandler}>Start Call</button>
       )}
-      <Collab groupId={group?._id!} docs={group?.docs!} />
-      <GroupDrive groupId={group?._id!} files={group?.files!} /> */}
-    </div>
-  );
+      <GroupDrive groupId={group?._id!} files={group?.files!} /> */
+  }
 }

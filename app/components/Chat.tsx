@@ -1,5 +1,3 @@
-"use client";
-import { useSession } from "next-auth/react";
 import React, {
   ChangeEvent,
   useContext,
@@ -8,39 +6,33 @@ import React, {
   useState,
 } from "react";
 import { SocketContext } from "./SocketProvider";
-
-export interface pageProps {
-  messages: Message[];
-  groupId: string;
-  groupName: string;
-}
+import Avatar from "./Avatar";
+import axios from "axios";
 
 let image: string | ArrayBuffer;
 import EmojiPicker from "emoji-picker-react";
-import axios from "axios";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
-
-export default function Chat({ messages, groupName, groupId }: pageProps) {
-  const { theme } = useTheme();
-  const [curTheme, setCurTheme] = useState(theme);
-  useEffect(() => {
-    setCurTheme(theme);
-  }, [theme]);
-
-  let { socket } = useContext(SocketContext);
+import Image from "next/image";
+export interface Chat1Props {
+  messages: Message[];
+  groupId: string;
+  curTheme: string;
+}
+export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
   const videoFileRef = useRef<any>(null);
   const imageFileRef = useRef<any>(null);
+  let { socket } = useContext(SocketContext);
 
   const [chatHistory, setChatHistory] = useState<Message[] | null>(null);
   const [newMessageText, setNewMessageText] = useState<string | null>();
   const handleVideoButtonClick = () => {
     videoFileRef.current.click();
   };
+
   const handlePhotoButtonClick = () => {
     imageFileRef.current.click();
   };
-
   useEffect(() => {
     setChatHistory(messages);
   }, [messages]);
@@ -95,6 +87,7 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
     );
   };
   const playHandler = async function (filename: string) {
+    console.log("play");
     const videoEl = document.getElementById(filename) as HTMLVideoElement;
     if (!videoEl.paused || videoEl.readyState >= 1) return;
     const { data } = await axios.post(
@@ -115,83 +108,11 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
       videoEl?.play();
     }, 200);
   };
-  // console.log(chatHistory);
-  // useEffect(() => {
-  //   // Scroll to the bottom of the page
-  //   const scrollTarget = document.getElementById("scrollTarget");
-  //   if (scrollTarget) {
-  //     console.log(scrollTarget);
-  //     // scrollTarget.scrollIntoView(false);
-  //     scrollTarget.scrollTop = scrollTarget.scrollHeight;
-  //   }
-  // }, [messages]);
   return (
-    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
-      <div
-        className={`flex sm:items-center justify-between py-3 border-b-2 border-gray-${
-          curTheme == "light" ? "200" : "250"
-        }`}
-      >
-        <div className="relative flex items-center space-x-4">
-          <div className="relative">
-            <span className="absolute text-green-500 right-0 bottom-0">
-              <svg width="20" height="20">
-                <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
-              </svg>
-            </span>
-            <img
-              src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-              alt=""
-              className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
-            />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <div className="text-2xl mt-1 flex items-center">
-              <span
-                className={`text-gray-${
-                  curTheme == "light" ? "200" : "500"
-                } mr-3`}
-              >
-                {groupName}
-              </span>
-            </div>
-            <span
-              className={`text-md text-gray-${
-                curTheme == "light" ? "200" : "500"
-              }`}
-            >
-              description
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2 mr-2">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-lg border h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="100"
-              height="100"
-              viewBox="0 0 100 100"
-              id="video"
-            >
-              <g>
-                <path d="M84.9 26.4L68 37.3V34c0-4.4-3.6-8-8-8H20c-4.4 0-8 3.6-8 8v32c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-3.3l16.9 10.9c1.9 1 3.1-.7 3.1-1.7V28c0-1-1.1-2.8-3.1-1.6zM64 66c0 2.2-1.8 4-4 4H20c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4h40c2.2 0 4 1.8 4 4v32zm20 2.3L68 58V42l16-10.3v36.6z"></path>
-              </g>
-              <g>
-                <path
-                  fill="#00F"
-                  d="M1224-650v1684H-560V-650h1784m8-8H-568v1700h1800V-658z"
-                ></path>
-              </g>
-            </svg>
-          </button>
-        </div>
-      </div>
+    <>
       <div
         id="scrollTarget"
-        className="flex flex-auto flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
+        className="flex flex-auto flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch border-r-2"
       >
         {chatHistory?.map((m) => {
           return (
@@ -219,8 +140,9 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
                             id={m.video}
                             controls
                             autoPlay
-                            poster="data:image/jpeg;base64,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"
                             onClick={() => playHandler(m.video)}
+                            onTouchStart={() => playHandler(m.video)}
+                            poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ8IDQcNFREWFhURFRUYHSggGBoxJxMVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDQ0NDw0PFSsZFRkrKzctLTcrKzctNys3LSs3LSsrNzcrLSsrKysrLSsrKys3KysrKysrKysrKysrKysrK//AABEIALcBEwMBIgACEQEDEQH/xAAaAAACAwEBAAAAAAAAAAAAAAACAwABBAUG/8QAHRABAQEBAQEBAQEBAAAAAAAAAAECAxIREwQUYf/EABkBAQEBAQEBAAAAAAAAAAAAAAECAAMEBf/EABgRAQEBAQEAAAAAAAAAAAAAAAABERIC/9oADAMBAAIRAxEAPwDwONH89sWNH40+vK+B68t/PbTz252NNGNusrh68ulz6NXLo5fPbTz6OkrjY6/Lq18urj8+jXy6s0drl2a+XZxOfVq59k2Okrt8+7Rju4uO52e6b5dJ6did1/6HJn9C/wDQnk9urf6Aa7uZf6A3+g8jt0ddytd/+sGv6C9f0HE30267E77Meu5euysTa076kb6Ea6la6qjnTN7Zumlb6Eb2Yiq3pn3Rb0TvStThe6TszVJ1RpkBorQ9UvSa6SA0XR6L0mukBoFHQVzrpFIpYUyZpuKRk3LjK9PqNGNH40y5NzXWVw9Rsxs/G2LGjsadZXG+XQ59Gnn0c7Gz8bVrnjp8+rTjq5eOh2erM6mexk7uXOo52Yun/oX/AKHM/ZX7MNdO/wBAb3/65t7hvdm10b3Be7n3sC9mDfe4L2Yb2DezM23sC9WO9Q3q2tjVrqVroz3qDXQ6MO1srWy9bLu21uR60XrQdbL1oarkV0Xqqug3SdVImqC1LoFotVIlDU+htSuRS1IFMuTMhkHmOEer0PJmQZhmY6Rx9GZOxScm5dI42HYp2dM+Tc1cc7GnOzJtlzRzRGNU6L/Vl9p7Ixq/VX6sl2q7Zsar1DerLdgvQa2NV6hvVlvQN6DTy1Xqr9WW9A/oNPLXeqv0ZP0T9G08tN6BvRn9h9jTy0XoC7Juw3bdHk67BdlXYbsdHk26DdF+g3Q08m3Qbov0r0NVyP6q0H1V0NPI/qF+kGnlMw3OVYydnKI7+lZyZMizgyYdI4+gSDzBzAplccqqDiTK5FJXF/VfEOpxf1VqqGtrYu6BdJQUacXdAulaBaNM8iuwXQbQ2p1U8jug3RdqvQ1XJvtXsr6r0NVyb7Vdlelehp5Nug3Rd0G6Gnk26Ddl+lXQ08mXSvRfpXptPJnpPRXpV0NPJvpXov0r0Ojyb6Qr0ja3LpYh+Mg5xp55VG9JnBkwZjJswuONJmF+D5hfhaKR5T4dcK8lOE/EsMuVWM2FWBsOsBctrYVYCw6wFyDhGoCnayXqCqkJ0Cm6hdiVyAoRWBSuRVqvqWKBxX1Vq6GhWKtVagLU6cXaG1VDaNVgvqvoLVfRpwf1XoH1X0aeTPSvQPqvraeTPSFfVjW5eh5NfOMvJr5O8cfTRiHZyVg7K45WCmU8iRSMBchuTVUjCbkNh1DYzYVchuTbA2M2FXJesn2A1A2EahWo0aheoKqRm1C9Ro1C7E1cIsD8OuQ2BRNirDbkNyCVYCw65BYlUKpdOsLsSuFUNMsBYmqgKEdgbAoKhWKBwKl2KoKIpGZ6PlWvnpg56acaeiPNW/Gjs6YsbOztcrnY1zS/TPNimzow76lpPtPZ0YZ9V9B6VdNrYMNDdAuxrYK0Gqq6Lum1sXaXqprQLoarFUFXdB+jTirFWCRmBchuTVWMxNyDWWi5BcixUZtZBctNyC5TYqVmuS7lquA3CMXKy3IblquA3Aw6zXIblpvMNwMOs3kNjRcAuRitJ+IZ5QYddXGjsaZc03Ond56152bnoxTQ5tWpxtnQc6MU6CnRtGNk6L/Rj9r9nWxr9q/Rl9p7GtjRegb0Z70DejaeT70BdkXoC7Gnk+7DdkXavY04d6T0R7XNNrYfNClImhzStThqAmhSnRi1WLQMXYryb8T4x0m4DcNHlPAw6zeFXm1eE8DG6Y7zBebbeYLhsPTFcF6w26wVrCbFT0yeUPuUGHRRcoU+rQZNCmyfqfW0nzYptn9J6GtjT7T2z+k9NrY0e1XZHtXptOH3YLsm7DdjTh12G7Julehpw72r0T6X6bWw30KaI+imm0YfNGZ0zyjzVSprRKOUjNMlVqbDZRQuUcKRyLkVBwhJFzIpBSHBoPKeTEbBpVwG5P8AgbGw6zawTvLXqE7ibFSstyhtiJXrJVJVVhE+p9CloUv6n0P1X0KH6V6B9T6NOD9K9A+q+tpwV0r6C1LQRWq+h+q+jWH9T6H6n1mHKKUuUUpBmaZKTDM0wU7NNzSM03K4507NMyVk3KommQcDkeYU0UFFSLUlFqRmQNqWg1Q0Vqk7HrROqmrgagbUSvGSqq0YBVRfFUKCoVgaFShSpQ1KolqrVWhtCoK0P1Vqvo04L6r6H6r6NOGfVyl/VynRhkopSpRTTaMOlHmkTQ5VamxozTcVmzo3GlSosas03LNjR+NKlRY0ZMyTmnZUmwcEkXIpIaGmWBsYFaL1TNE6FVAapOtC3Sd1FXIl0hVqxqg/E+LRSE+K+IjENgbERNVAUuoiK6QFobURNXA2htRErVar0iAr9L9IjBcoppEIFKKaRDE2GTRmdIiok7Gj8aRFRFjRjR+KiLiKfgyIi4gXwGsrQgncZ9oiaYz9GfaImrhVREQt/9k="
                           ></video>
                         )}
                         {m.text && (
@@ -233,11 +155,8 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
                         </p>
                       </div>
                     </div>
-                    <img
-                      src="https://images.unsplash.com/photo-1590031905470-a1a1feacbb0b?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-                      alt="My profile"
-                      className="w-6 h-6 rounded-full order-2"
-                    />
+
+                    <Avatar classes="h-6 w-6 order-2" name={m.senderName} />
                   </div>
                 </div>
               ) : (
@@ -274,11 +193,7 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
                         <p>{m.senderName}</p>
                       </div>
                     </div>
-                    <img
-                      src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-                      alt="My profile"
-                      className="w-6 h-6 rounded-full order-1"
-                    />
+                    <Avatar classes="h-6 w-6 order-1" name={m.senderName} />
                   </div>
                 </div>
               )}
@@ -299,9 +214,7 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
             type="text"
             className={`w-full focus:outline-none focus:placeholder-gray-400 text-gray-${
               curTheme == "light" ? "200" : "0"
-            } placeholder-gray-600 pl-2 bg-gray-${
-              curTheme == "light" ? "200" : "500"
-            } rounded-md py-3`}
+            } placeholder-gray-600 pl-2 bg-gray-300 rounded-md py-3`}
           />
           <div className="flex align-center absolute right-0 items-center inset-y-0  sm:flex">
             <button
@@ -385,6 +298,6 @@ export default function Chat({ messages, groupName, groupId }: pageProps) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

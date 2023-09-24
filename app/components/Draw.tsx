@@ -7,7 +7,7 @@ import { drawLine } from "@/app/utils/drawLine";
 import { SocketContext } from "@/app/components/SocketProvider";
 
 interface pageProps {
-  params: { groupId: string };
+  groupId: string;
 }
 
 type DrawLineProps = {
@@ -16,7 +16,7 @@ type DrawLineProps = {
   color: string;
 };
 
-const page: FC<pageProps> = ({ params }) => {
+const Draw: FC<pageProps> = ({ groupId }) => {
   let { socket } = useContext(SocketContext);
 
   const [color, setColor] = useState<string>("#000");
@@ -26,7 +26,7 @@ const page: FC<pageProps> = ({ params }) => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!socket) return;
     socket.emit("client-ready", {
-      groupId: params.groupId,
+      groupId: groupId,
     });
 
     socket.on("get-canvas-state", () => {
@@ -34,7 +34,7 @@ const page: FC<pageProps> = ({ params }) => {
       console.log("sending canvas state");
       socket.emit("canvas-state", {
         state: canvasRef.current.toDataURL(),
-        groupId: params.groupId,
+        groupId: groupId,
       });
     });
 
@@ -67,7 +67,7 @@ const page: FC<pageProps> = ({ params }) => {
 
   function createLine({ prevPoint, currentPoint, ctx }: Draw) {
     socket.emit("draw-line", {
-      groupId: params.groupId,
+      groupId: groupId,
       prevPoint,
       currentPoint,
       color,
@@ -76,13 +76,13 @@ const page: FC<pageProps> = ({ params }) => {
   }
 
   return (
-    <div className="w-screen h-screen bg-white flex justify-center items-center">
+    <div className=" h-screen bg-white flex justify-center items-center">
       <div className="flex flex-col gap-10 pr-10">
         <ChromePicker color={color} onChange={(e) => setColor(e.hex)} />
         <button
           type="button"
           className="p-2 rounded-md border border-black"
-          onClick={() => socket.emit("clear", { groupId: params.groupId })}
+          onClick={() => socket.emit("clear", { groupId: groupId })}
         >
           Clear canvas
         </button>
@@ -90,6 +90,7 @@ const page: FC<pageProps> = ({ params }) => {
       <canvas
         ref={canvasRef}
         onMouseDown={onMouseDown}
+        onTouchStart={onMouseDown}
         width={750}
         height={750}
         className="border border-black rounded-md"
@@ -98,4 +99,4 @@ const page: FC<pageProps> = ({ params }) => {
   );
 };
 
-export default page;
+export default Draw;
