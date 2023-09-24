@@ -21,7 +21,7 @@ export const useDraw = (
   };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: any) => {
       if (!mouseDown) return;
       const currentPoint = computePointInCanvas(e);
 
@@ -32,30 +32,42 @@ export const useDraw = (
       prevPoint.current = currentPoint;
     };
 
-    const computePointInCanvas = (e: MouseEvent) => {
+    const computePointInCanvas = (e: any) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-
+      console.log(e.type);
+      let x: number = 0,
+        y: number = 0;
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
 
+      if (e.type == "touchmove") {
+        x = e.touches[0].clientX - rect.left;
+        y = e.touches[0].clientY - rect.top;
+      } else if (e.type == "mousemove") {
+        x = e.clientX - rect.left;
+        y = e.clientY - rect.top;
+      }
       return { x, y };
     };
 
     const mouseUpHandler = () => {
+      console.log("pointerup");
       setMouseDown(false);
       prevPoint.current = null;
     };
 
     // Add event listeners
+    canvasRef.current?.addEventListener("touchmove", handler);
     canvasRef.current?.addEventListener("mousemove", handler);
     window.addEventListener("mouseup", mouseUpHandler);
+    canvasRef.current?.addEventListener("touchend", mouseUpHandler);
 
     // Remove event listeners
     return () => {
       canvasRef.current?.removeEventListener("mousemove", handler);
       window.removeEventListener("mouseup", mouseUpHandler);
+      canvasRef.current?.removeEventListener("touchend", mouseUpHandler);
+      canvasRef.current?.removeEventListener("touchmove", handler);
     };
   }, [onDraw]);
 
