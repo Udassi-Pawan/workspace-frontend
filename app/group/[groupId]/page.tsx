@@ -74,7 +74,7 @@ export default function Page({
     setCurTheme(theme);
   }, [theme]);
   const [curTheme, setCurTheme] = useState(theme);
-  const [curPage, setCurPage] = useState<string>("chat");
+  const [curPage, setCurPage] = useState<string>("draw");
 
   return (
     <div className="flex">

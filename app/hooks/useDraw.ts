@@ -39,13 +39,15 @@ export const useDraw = (
       let x: number = 0,
         y: number = 0;
       const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
 
-      if (e.type == "touchmove") {
-        x = e.touches[0].clientX - rect.left;
-        y = e.touches[0].clientY - rect.top;
-      } else if (e.type == "mousemove") {
-        x = e.clientX - rect.left;
-        y = e.clientY - rect.top;
+      if (e.type === "touchmove") {
+        x = (e.touches[0].clientX - rect.left) * scaleX;
+        y = (e.touches[0].clientY - rect.top) * scaleY;
+      } else if (e.type === "mousemove") {
+        x = (e.clientX - rect.left) * scaleX;
+        y = (e.clientY - rect.top) * scaleY;
       }
       return { x, y };
     };

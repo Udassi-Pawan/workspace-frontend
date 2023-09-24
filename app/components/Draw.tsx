@@ -5,6 +5,7 @@ import { ChromePicker } from "react-color";
 
 import { drawLine } from "@/app/utils/drawLine";
 import { SocketContext } from "@/app/components/SocketProvider";
+import { Button } from "@/shardcn/components/ui/button";
 
 interface pageProps {
   groupId: string;
@@ -76,26 +77,45 @@ const Draw: FC<pageProps> = ({ groupId }) => {
   }
 
   return (
-    <div className=" h-screen bg-white flex justify-center items-center">
-      <div className="flex flex-col gap-10 pr-10">
-        <ChromePicker color={color} onChange={(e) => setColor(e.hex)} />
-        <button
-          type="button"
-          className="p-2 rounded-md border border-black"
-          onClick={() => socket.emit("clear", { groupId: groupId })}
-        >
-          Clear canvas
-        </button>
-      </div>
-      <canvas
+    <>
+      <div className="mt-2 bg-white flex flex-col justify-center items-center">
+        <div className="flex items-center gap-8">
+          <Button
+            type="button"
+            className="m-2 py-1 px-3 rounded-md border border-black flex flex-col items-center"
+            onClick={() => socket.emit("clear", { groupId: groupId })}
+          >
+            <p className="block">Clear</p>
+            <p className="block">canvas</p>
+          </Button>
+          <ChromePicker
+            className="m-2"
+            color={color}
+            onChange={(e) => setColor(e.hex)}
+          />
+        </div>
+
+        {/* <canvas
         ref={canvasRef}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
         width={750}
         height={750}
         className="border border-black rounded-md"
-      />
-    </div>
+      /> */}
+
+        <canvas
+          ref={canvasRef}
+          onMouseDown={onMouseDown}
+          onTouchStart={onMouseDown}
+          style={{
+            maxWidth: "100%", // Make it responsive on desktop
+            width: "100%", // Make it responsive on desktop
+          }}
+          className="border border-black rounded-md m-5 h-auto"
+        />
+      </div>
+    </>
   );
 };
 
