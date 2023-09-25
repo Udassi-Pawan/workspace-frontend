@@ -12,7 +12,7 @@ type Group = {
   name: string;
   members: User[];
   history: Message[];
-  docs: string[];
+  docs: Doc[];
 };
 
 type Message = {
@@ -21,14 +21,20 @@ type Message = {
   text: string;
   senderName: string;
   image: string;
-  video : string
+  video: string;
 };
 
 type FileType = {
-  owner: string;
+  owner: User;
   name: string;
   type: string;
   extension: string;
   timestamp: number;
   _id: string;
+};
+
+type Doc = {
+  name: string;
+  _id: string;
+  timestamp: string;
 };

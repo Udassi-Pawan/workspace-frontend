@@ -74,7 +74,7 @@ export default function Page({
     setCurTheme(theme);
   }, [theme]);
   const [curTheme, setCurTheme] = useState(theme);
-  const [curPage, setCurPage] = useState<string>("docs");
+  const [curPage, setCurPage] = useState<string>("drive");
 
   return (
     <div className="flex">

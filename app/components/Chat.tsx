@@ -94,6 +94,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
       `http://localhost:3333/files/download`,
       {
         filename,
+        originalFilename : filename,
       },
       {
         headers: {
