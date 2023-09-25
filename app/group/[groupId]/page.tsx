@@ -74,11 +74,11 @@ export default function Page({
     setCurTheme(theme);
   }, [theme]);
   const [curTheme, setCurTheme] = useState(theme);
-  const [curPage, setCurPage] = useState<string>("draw");
+  const [curPage, setCurPage] = useState<string>("docs");
 
   return (
     <div className="flex">
-      <div className="flex-1 sm:p-3 justify-start flex flex-col h-screen">
+      <div className="flex-1 sm:p-3 justify-start flex flex-col ">
         <div
           className={`flex sm:items-center justify-between  border-b-2 border-gray-${
             curTheme == "light" ? "200" : "250"
@@ -200,7 +200,7 @@ export default function Page({
         )}
       </div>
       <GroupInfo members={group?.members} usersOnline={usersOnline!} />
-      <button onClick={themeHandler}>toggle</button>
+      {/* <button onClick={themeHandler}>toggle</button> */}
     </div>
   );
 

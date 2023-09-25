@@ -330,7 +330,7 @@ export function MenuBar({ editor }: any) {
   const [open, setOpen] = useState<boolean>(true);
 
   return (
-    <div className="overflow-auto max-h-[300px] md:max-h-[none] flex items-center gap-2 bg-black p-2 text-white w-full">
+    <div className="overflow-y-auto max-h-[300px] md:max-h-[none] flex items-center gap-2 bg-black p-2 text-white">
       <input
         type="color"
         onInput={(event: any) =>
