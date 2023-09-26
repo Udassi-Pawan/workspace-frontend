@@ -6,9 +6,14 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 
+// const videoConstraints = {
+//   height: window.innerHeight / 2,
+//   width: window.innerWidth / 2,
+// };
+
 const videoConstraints = {
-  height: window.innerHeight / 2,
-  width: window.innerWidth / 2,
+  width: { min: 1280 },
+  height: { min: 720 },
 };
 const displayMediaOptions = {
   video: {
@@ -24,6 +29,12 @@ const Video = ({ stream }: { stream: any }) => {
   useEffect(() => {
     if (localVideo.current) localVideo.current.srcObject = stream.stream;
     stream.stream.getVideoTracks().forEach((videoTrack: any) => {
+      videoTrack.onmute = () => {
+        console.log("Frozen video stream detected!");
+        setShow(false);
+      };
+    });
+    stream.stream.getAudioTracks().forEach((videoTrack: any) => {
       videoTrack.onmute = () => {
         console.log("Frozen video stream detected!");
         setShow(false);
@@ -48,20 +59,21 @@ const Video = ({ stream }: { stream: any }) => {
 };
 export interface pageProps {}
 export default function page({ params }: { params: { groupId: string } }) {
+  const [streamForMediapipe, setStreamForMediapipe] =
+    useState<null | MediaStream>(null);
+  const [backgroundBlur, setBackgroundBlur] = useState<boolean>(false);
+  const [myVideo, setMyVideo] = useState<boolean>(true);
   const [myAudio, setMyAudio] = useState<boolean>(false);
   const canvasRef = useRef<any>();
   const contextRef = useRef<any>();
   const inputVideoRef = useRef<any>();
-  const [showUserVideo, setShowUserVideo] = useState<boolean>(false);
   const { data: session } = useSession();
   const router = useRouter();
   const [myStreams, setMyStreams] = useState<any>([]);
   const myStreamsUpdated = useRef<any>(myStreams);
   const setMyStreamsUpdated = async function (data: any) {
-    myStreamsUpdated.current = [...myStreamsUpdated.current, data];
-    setMyStreams((prev: any) => [...prev, data]);
-    myStreamsUpdated.current = [data];
-    setMyStreams([data]);
+    myStreamsUpdated.current = data;
+    setMyStreams(data);
   };
   const [onCall, setOnCall] = useState<any>(false);
   const [peers, setPeers] = useState<any>([]);
@@ -77,7 +89,39 @@ export default function page({ params }: { params: { groupId: string } }) {
   let { socket, peer } = useContext(SocketContext);
   const [usersOnline, setUsersOnline] = useState<any>(null);
   const [thisGroupCallStatus, setThisGroupCallStatus] = useState<any>(null);
-
+  async function callEverybody(video: boolean, audio: boolean) {
+    if (video == false && audio == false) return;
+    navigator.mediaDevices
+      .getUserMedia({
+        video: videoConstraints,
+        audio: true,
+      })
+      .then((_stream: any) => {
+        _stream.getAudioTracks()[0].enabled = audio;
+        userVideo.current!.srcObject = _stream;
+        setMyStreamsUpdated(_stream);
+        thisGroupCallStatus.forEach((user: any) => {
+          if (user.clientId == socket.id) return;
+          const call = peer.call(user.clientId, _stream, {
+            metadata: { name: session?.user!.name, returnVideo: false },
+          });
+        });
+      });
+  }
+  async function stopStream() {
+    try {
+      let tracks = myStreamsUpdated.current.getTracks();
+      tracks.forEach(function (track: any) {
+        track.stop();
+      });
+      setMyStreamsUpdated(null);
+      tracks = streamForMediapipe?.getTracks();
+      tracks.forEach(function (track: any) {
+        track.stop();
+      });
+      setStreamForMediapipe(null);
+    } catch (e) {}
+  }
   useEffect(() => {
     if (!socket || !peer) return;
 
@@ -85,33 +129,22 @@ export default function page({ params }: { params: { groupId: string } }) {
     console.log("peer", peer._id);
     peer.on("call", async (mediaConnection: any) => {
       console.log("call", mediaConnection);
-      navigator.mediaDevices
-        .getUserMedia({
-          video: videoConstraints,
-          audio: true,
-        })
-        .then((_stream) => {
-          _stream.getAudioTracks()[0].enabled = myAudio;
-          console.log(mediaConnection.metadata);
-          if (mediaConnection.metadata.returnVideo) {
-            userVideo.current!.srcObject = _stream;
-            setMyStreamsUpdated(_stream);
-            mediaConnection.answer(_stream);
-          } else mediaConnection.answer();
-          mediaConnection.on("stream", (remoteStream: any) => {
-            setPeersUpdated({
-              stream: remoteStream,
-              metadata: mediaConnection.metadata,
-            });
-          });
+      const _stream = myStreamsUpdated.current;
+      if (mediaConnection.metadata.returnVideo) {
+        userVideo.current!.srcObject = _stream;
+        mediaConnection.answer(_stream);
+      } else mediaConnection.answer();
+      mediaConnection.on("stream", (remoteStream: any) => {
+        setPeersUpdated({
+          stream: remoteStream,
+          metadata: mediaConnection.metadata,
         });
+      });
     });
 
     const userOnlineHandler = ({ usersOnline, callStatus }: any) => {
       setUsersOnline(usersOnline);
       setThisGroupCallStatus(callStatus);
-      console.log("callStatus", callStatus);
-      console.log("usersOnline", usersOnline);
     };
 
     socket.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
@@ -129,7 +162,6 @@ export default function page({ params }: { params: { groupId: string } }) {
   }, [socket, peer]);
 
   const acceptHandler = async function () {
-    setShowUserVideo(true);
     socket.emit("acceptCall", { groupId: params.groupId });
     navigator.mediaDevices
       .getUserMedia({
@@ -158,16 +190,20 @@ export default function page({ params }: { params: { groupId: string } }) {
   };
 
   const blurBackgroundHandler = async function () {
-    turnVideoOffHandler();
-    setShowUserVideo(true);
+    await stopStream();
+    setMyVideo(true);
+    setBackgroundBlur(true);
     contextRef.current = canvasRef.current?.getContext("2d");
-    const constraints = {
-      video: { width: { min: 1280 }, height: { min: 720 } },
-    };
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-      inputVideoRef.current.srcObject = stream;
-      sendToMediaPipe();
-    });
+    navigator.mediaDevices
+      .getUserMedia({
+        video: videoConstraints,
+        audio: false,
+      })
+      .then((stream) => {
+        setStreamForMediapipe(stream);
+        inputVideoRef.current.srcObject = stream;
+        sendToMediaPipe();
+      });
 
     const selfieSegmentation = new SelfieSegmentation({
       locateFile: (file) =>
@@ -183,7 +219,6 @@ export default function page({ params }: { params: { groupId: string } }) {
 
     const sendToMediaPipe = async () => {
       if (!inputVideoRef.current.videoWidth) {
-        console.log(inputVideoRef.current.videoWidth);
         requestAnimationFrame(sendToMediaPipe);
       } else {
         await selfieSegmentation.send({ image: inputVideoRef.current });
@@ -192,21 +227,29 @@ export default function page({ params }: { params: { groupId: string } }) {
     };
 
     const canvasStream = canvasRef.current.captureStream();
-    userVideo.current.srcObject = canvasStream;
-    setMyStreamsUpdated(canvasStream);
+    const audioStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+    });
+
+    const combinedStream = new MediaStream();
+
+    canvasStream.getVideoTracks().forEach((track: any) => {
+      combinedStream.addTrack(track);
+    });
+
+    audioStream.getAudioTracks().forEach((track) => {
+      combinedStream.addTrack(track);
+    });
+    userVideo.current.srcObject = combinedStream;
+    setMyStreamsUpdated(combinedStream);
+    combinedStream.getAudioTracks()[0].enabled = myAudio;
 
     thisGroupCallStatus.forEach((user: any) => {
       console.log("calling", user.clientId, "now");
-      const call = peer.call(user.clientId, canvasStream, {
-        metadata: { name: session?.user!.name, returnVideo: false },
-      });
-      setOnCall(call);
-      call.on("stream", (remoteStream: any) => {
-        setPeersUpdated({
-          stream: remoteStream,
-          metadata: { name: user.name },
+      if (user.clientId != socket.id)
+        peer.call(user.clientId, combinedStream, {
+          metadata: { name: session?.user!.name, returnVideo: false },
         });
-      });
     });
   };
   const onResults = (results: any) => {
@@ -251,9 +294,9 @@ export default function page({ params }: { params: { groupId: string } }) {
 
   const startHandler = async () => {
     setOnCall(true);
-    setShowUserVideo(true);
+    setMyVideo(true);
     const _stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
+      video: myVideo ? videoConstraints : false,
       audio: true,
     });
     _stream.getAudioTracks()[0].enabled = myAudio;
@@ -263,29 +306,15 @@ export default function page({ params }: { params: { groupId: string } }) {
   };
 
   const turnVideoOffHandler = async function () {
-    myStreamsUpdated.current.forEach(async (_stream: any) => {
-      await _stream.getTracks().forEach((track: any) => track.stop());
-    });
-    setMyStreamsUpdated([]);
-    setShowUserVideo(false);
+    setMyVideo(false);
+    stopStream();
+    callEverybody(false, myAudio);
   };
 
   async function turnVideoOnHandler() {
-    setShowUserVideo(true);
-    const _stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
-      audio: true,
-    });
-    _stream.getAudioTracks()[0].enabled = myAudio;
-    userVideo.current!.srcObject = _stream;
-    setMyStreamsUpdated(_stream);
-    thisGroupCallStatus.forEach((user: any) => {
-      console.log("calling", user.clientId, "now");
-      if (user.clientId == socket.id) return;
-      peer.call(user.clientId, _stream, {
-        metadata: { name: session?.user!.name, returnVideo: false },
-      });
-    });
+    setMyVideo(true);
+    stopStream();
+    callEverybody(true, myAudio);
   }
   async function shareScreenHandler() {
     const screenStream = await navigator.mediaDevices.getDisplayMedia(
@@ -303,22 +332,37 @@ export default function page({ params }: { params: { groupId: string } }) {
   async function endHandler() {
     setOnCall(false);
     socket.emit(`endCall`, { groupId: params.groupId });
-    turnVideoOffHandler();
+    stopStream();
     router.push(`/group/${params.groupId}`);
   }
 
   async function turnAudioOffHandler() {
     setMyAudio(false);
-    myStreamsUpdated.current[0].getAudioTracks()[0].enabled = false;
+    if (myStreamsUpdated.current)
+      myStreamsUpdated.current.getAudioTracks()[0].enabled = false;
   }
   async function turnAudioOnHandler() {
     setMyAudio(true);
-    myStreamsUpdated.current[0].getAudioTracks()[0].enabled = true;
+    if (myStreamsUpdated.current.getAudioTracks()[0])
+      myStreamsUpdated.current.getAudioTracks()[0].enabled = true;
+    else if (backgroundBlur) blurBackgroundHandler();
+    else callEverybody(false, true);
   }
-  console.log("peers", peersUpdated.current);
+  console.log("callStatus", thisGroupCallStatus);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
-      {showUserVideo && <video muted ref={userVideo} autoPlay playsInline />}
+      <video
+        className={`${myVideo ? "" : "hidden"}`}
+        muted
+        style={{
+          height: "200px",
+          width: "200px",
+        }}
+        ref={userVideo}
+        autoPlay
+        playsInline
+      />
       <div className="">
         <video hidden autoPlay ref={inputVideoRef} />
         <canvas hidden ref={canvasRef} width={1280} height={720} />
@@ -326,15 +370,16 @@ export default function page({ params }: { params: { groupId: string } }) {
       {peersUpdated.current.map((stream: any, index: any) => {
         return <Video key={index} stream={stream} />;
       })}
-      {/* {!onCall &&
-      thisGroupCallStatus != undefined &&
-      thisGroupCallStatus[params.groupId]?.length != 0 ? ( */}
-      <div className="">
-        <button onClick={acceptHandler}>Accept Call</button>
-      </div>
-      {/* ) : ( */}
-      <button onClick={startHandler}>Start Call</button>
-      {/* )} */}
+
+      {thisGroupCallStatus &&
+        !thisGroupCallStatus.find((u: any) => u.clientId == socket.id) && (
+          <button onClick={acceptHandler}>Accept Call</button>
+        )}
+
+      {(!thisGroupCallStatus || thisGroupCallStatus.length == 0) && (
+        <button onClick={startHandler}>Start Call</button>
+      )}
+
       {onCall && <button onClick={turnVideoOffHandler}>turn video off</button>}
       <button onClick={blurBackgroundHandler}>turn on blur background</button>
 
