@@ -8,13 +8,12 @@ export interface OnlineProps {
 }
 
 export default function GroupInfo({ members, usersOnline }: OnlineProps) {
-  let { socket } = useContext(SocketContext);
   return (
-    <div className="border-l-2 hidden md:block  px-2 flex flex-col items-center">
-      <div className=" border-b-2 w-full">
-        <h1 className="py-3.5 my-4 text-2xl">Members</h1>
-      </div>
-      <div className="flex flex-col  gap-4 mt-4">
+    <div className=" hidden md:block pl-2 flex flex-col items-center">
+      {/* <div className=""> */}
+      <h1 className="ml-7 mt-10 text-2xl">Members</h1>
+      {/* </div> */}
+      <div className="flex flex-col  gap-4 mt-11">
         {members?.map((m: User) => (
           <div key={m._id} className="flex items-center gap-1">
             <Avatar classes="w-12 h-12" name={m.name} />
@@ -27,6 +26,9 @@ export default function GroupInfo({ members, usersOnline }: OnlineProps) {
           </div>
         ))}
       </div>
+      <button className="ml-3 mt-8 bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-2 px-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 hover:brightness-110 hover:animate-pulse active:animate-bounce">
+        Leave Group
+      </button>
     </div>
   );
 }

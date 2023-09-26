@@ -87,13 +87,9 @@ export default function Page({
   const [curPage, setCurPage] = useState<string>("drive");
 
   return (
-    <div className="flex">
-      <div className="flex-1 sm:p-3 justify-start flex flex-col ">
-        <div
-          className={`flex sm:items-center justify-between  border-b-2 border-gray-${
-            curTheme == "light" ? "200" : "250"
-          }`}
-        >
+    <div className="flex justify-between">
+      <div className=" relative flex-1 sm:p-3 justify-start flex flex-col ">
+        <div className={`flex items-center justify-between `}>
           <div className="relative flex p-2 items-center space-x-4">
             <div className="relative">
               <span className="absolute text-green-500 right-0 bottom-0">
@@ -225,21 +221,33 @@ export default function Page({
             </Button>
           ))}
         </div>
-        {curPage == "chat" && (
-          <Chat
-            messages={group?.history!}
-            groupId={group?._id!}
-            curTheme={theme!}
-          />
-        )}
-        {curPage == "drive" && (
-          <GroupDrive groupId={group?._id!} files={group?.files!} />
-        )}
-        {curPage == "draw" && group?._id && <Draw groupId={group?._id!} />}
-        {curPage == "docs" && (
-          <Collab groupId={group?._id!} docs={group?.docs!} />
-        )}
+
+        <div
+          style={{
+            top: "5rem",
+          }}
+          className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
+        ></div>
+
+        <div className="mx-3">
+          {curPage == "chat" && (
+            <Chat
+              messages={group?.history!}
+              groupId={group?._id!}
+              curTheme={theme!}
+            />
+          )}
+          {curPage == "drive" && (
+            <GroupDrive groupId={group?._id!} files={group?.files!} />
+          )}
+          {curPage == "draw" && group?._id && <Draw groupId={group?._id!} />}
+          {curPage == "docs" && (
+            <Collab groupId={group?._id!} docs={group?.docs!} />
+          )}
+        </div>
       </div>
+      <div className="hidden md:flex border-l border-gray-300 min-h-screen "></div>
+
       <GroupInfo members={group?.members} usersOnline={usersOnline!} />
       {/* <button onClick={themeHandler}>toggle</button> */}
     </div>
