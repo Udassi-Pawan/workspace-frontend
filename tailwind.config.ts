@@ -2,11 +2,26 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+
+  safelist: [
+    "hover:bg-red-500",
+    "border-red-500",
+    "hover:border-red-600",
+    "hover:bg-orange-500",
+    "border-orange-500",
+    "hover:border-orange-600",
+    "hover:bg-green-500",
+    "border-green-500",
+    "hover:border-green-600",
+    "hover:bg-yellow-500",
+    "border-yellow-500",
+    "hover:border-yellow-600",
+  ],
   theme: {
     container: {
       center: true,
@@ -73,4 +88,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

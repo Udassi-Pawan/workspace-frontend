@@ -10,6 +10,7 @@ import Image from "next/image";
 import GroupInfo from "@/app/components/GroupInfo";
 import Draw from "@/app/components/Draw";
 import Collab from "@/app/components/Collab";
+import Link from "next/link";
 
 const menuItems = [
   {
@@ -29,6 +30,15 @@ const menuItems = [
     color: "yellow",
   },
 ];
+
+function getClassForNavButtons(color: string, curPage: string, name: string) {
+  const string = new String(
+    `bg-${
+      curPage == name ? `${color}-500` : "gray-300"
+    } text-gray-800 font-bold rounded border-b-2 border-${color}-500 hover:border-${color}-600  hover:bg-${color}-500 hover:text-white shadow-md inline-flex items-center`
+  );
+  return string;
+}
 
 export default function Page({
   params,
@@ -107,16 +117,13 @@ export default function Page({
           <>
             {" "}
             {menuItems.map((m) => (
-              <div key={m.name} className="hidden md:flex">
+              <div key={m.name + m.name + m.name} className="hidden md:flex">
                 <Button
                   onClick={() => setCurPage(m.name)}
-                  className={` bg-${
-                    curPage == m.name ? `${m.color}-500` : "gray-300"
-                  } text-gray-800 font-bold rounded border-b-2 border-${
-                    m.color
-                  }-500 hover:border-${m.color}-600 hover:bg-${
-                    m.color
-                  }-500 hover:text-white shadow-md py-2 px-6 inline-flex items-center`}
+                  className={
+                    getClassForNavButtons(m.color, curPage, m.name) +
+                    " py-2 px-6 "
+                  }
                 >
                   <span className="mr-2">
                     {m.name[0].toUpperCase() + m.name.slice(1)}
@@ -125,44 +132,78 @@ export default function Page({
                     alt=""
                     width={"20"}
                     height={"20"}
-                    src={"/chat.png"}
+                    src={`/${m.name}.png`}
                   ></Image>
                 </Button>
               </div>
             ))}
           </>
-          <div className="flex items-center mr-2">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-3xl border transition bg-green-400 py-2 px-3  duration-500 ease-in-out text-gray-500 hover:bg-green-300 focus:outline-none"
-            >
-              <svg
-                fill="green-900"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 100 100"
-                id="video"
+          {thisGroupCallStatus && thisGroupCallStatus.length ? (
+            <Link href={`/video/${group?._id}`}>
+              <div className="flex items-center mr-2">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-3xl border transition bg-green-400 py-2 px-3  duration-500 ease-in-out text-gray-500 hover:bg-green-300 focus:outline-none"
+                >
+                  <svg
+                    fill="green-900"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 100 100"
+                    id="video"
+                  >
+                    <g>
+                      <path d="M84.9 26.4L68 37.3V34c0-4.4-3.6-8-8-8H20c-4.4 0-8 3.6-8 8v32c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-3.3l16.9 10.9c1.9 1 3.1-.7 3.1-1.7V28c0-1-1.1-2.8-3.1-1.6zM64 66c0 2.2-1.8 4-4 4H20c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4h40c2.2 0 4 1.8 4 4v32zm20 2.3L68 58V42l16-10.3v36.6z"></path>
+                    </g>
+                    <g>
+                      <path
+                        fill="#00F"
+                        d="M1224-650v1684H-560V-650h1784m8-8H-568v1700h1800V-658z"
+                      ></path>
+                    </g>
+                  </svg>
+                  <p className="ml-2 text-xl text-green-900">JOIN</p>
+                </button>
+              </div>
+            </Link>
+          ) : (
+            <Link href={`/video/${group?._id}`}>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-xl border transition bg-gray-200   duration-500 ease-in-out text-gray-500 hover:bg-green-300 focus:outline-none"
+                style={{
+                  width: "50px", // Set a fixed width
+                  height: "37px", // Set a fixed height
+                }}
               >
-                <g>
-                  <path d="M84.9 26.4L68 37.3V34c0-4.4-3.6-8-8-8H20c-4.4 0-8 3.6-8 8v32c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-3.3l16.9 10.9c1.9 1 3.1-.7 3.1-1.7V28c0-1-1.1-2.8-3.1-1.6zM64 66c0 2.2-1.8 4-4 4H20c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4h40c2.2 0 4 1.8 4 4v32zm20 2.3L68 58V42l16-10.3v36.6z"></path>
-                </g>
-                <g>
-                  <path
-                    fill="#00F"
-                    d="M1224-650v1684H-560V-650h1784m8-8H-568v1700h1800V-658z"
-                  ></path>
-                </g>
-              </svg>
-              <p className="ml-2 text-green-900">JOIN</p>
-            </button>
-          </div>
+                <svg
+                  fill="green-900"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 100 100"
+                  id="video"
+                >
+                  <g>
+                    <path d="M84.9 26.4L68 37.3V34c0-4.4-3.6-8-8-8H20c-4.4 0-8 3.6-8 8v32c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-3.3l16.9 10.9c1.9 1 3.1-.7 3.1-1.7V28c0-1-1.1-2.8-3.1-1.6zM64 66c0 2.2-1.8 4-4 4H20c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4h40c2.2 0 4 1.8 4 4v32zm20 2.3L68 58V42l16-10.3v36.6z"></path>
+                  </g>
+                  <g>
+                    <path
+                      fill="#00F"
+                      d="M1224-650v1684H-560V-650h1784m8-8H-568v1700h1800V-658z"
+                    ></path>
+                  </g>
+                </svg>
+              </button>
+            </Link>
+          )}
         </div>
 
         <div className="md:hidden flex justify-between justify-self-start space-x-2 p-2 border-b-2">
           {menuItems.map((m) => (
             <Button
-              key={m.name}
+              key={m.name + "chota"}
               onClick={() => setCurPage(m.name)}
               className={`bg-${
                 curPage == m.name ? `${m.color}-500` : "gray-300"
@@ -179,7 +220,7 @@ export default function Page({
                 alt=""
                 width={"20"}
                 height={"20"}
-                src={"/chat.png"}
+                src={`/${m.name}.png`}
               ></Image>
             </Button>
           ))}
