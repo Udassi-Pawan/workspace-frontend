@@ -89,7 +89,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
     setCurTheme(theme);
   }, [theme]);
   const [curTheme, setCurTheme] = useState(theme);
-  const [curPage, setCurPage] = useState<string>("drive");
+  const [curPage, setCurPage] = useState<string>("chat");
   const joinHandler = async function () {
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/join`,
@@ -109,8 +109,8 @@ export default function Page({ params }: { params: { groupId: string } }) {
       {group == "You are not a member" ? (
         <Button onClick={joinHandler}>Join</Button>
       ) : (
-        <div className="flex justify-between">
-          <div className=" relative flex-1 sm:p-3 justify-start flex flex-col ">
+        <div className=" flex justify-between">
+          <div className=" flex-1 sm:p-3 justify-start flex flex-col ">
             <div className={`flex items-center justify-between `}>
               <div className="relative flex p-2 items-center space-x-4">
                 <div className="relative">
@@ -254,7 +254,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
               className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
             ></div>
 
-            <div className="mx-3">
+            <div className="h-full mx-3">
               {curPage == "chat" && (
                 <Chat
                   messages={group?.history!}
@@ -273,7 +273,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
               )}
             </div>
           </div>
-          <div className="hidden md:flex border-l border-gray-300 min-h-screen "></div>
+          <div className="md:flex border-l border-gray-300 min-h-screen "></div>
 
           <GroupInfo members={group?.members} usersOnline={usersOnline!} />
           {/* <button onClick={themeHandler}>toggle</button> */}

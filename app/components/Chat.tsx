@@ -113,7 +113,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
     }, 200);
   };
   return (
-    <>
+    <div className="relative h-full flex flex-col justify-end">
       <div
         id="scrollTarget"
         className="flex flex-auto flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
@@ -208,7 +208,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
       <div
         className={` border-t-2 border-gray-${
           curTheme == "light" ? "200" : "500"
-        } px-4 pt-4 mb-2 `}
+        } px-4 pt-4 mb-2 justify-self-end `}
       >
         <div className="relative flex align-center">
           <input
@@ -302,6 +302,6 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
