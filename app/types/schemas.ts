@@ -7,6 +7,8 @@ type User = {
 };
 
 type Group = {
+  image: string;
+  description: string;
   _id: string;
   files: FileType[];
   name: string;
