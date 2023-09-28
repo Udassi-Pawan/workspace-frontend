@@ -49,9 +49,12 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
   }, [socket, groupId]);
   const uploadHandler = async function () {
     const curFile = videoFileRef.current.files[0];
-    const { data } = await axios.post("http://localhost:3333/s3/upload", {
-      filetype: curFile.type,
-    });
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/s3/upload`,
+      {
+        filetype: curFile.type,
+      }
+    );
     console.log(data);
     const { uploadUrl, videoId } = data;
     await axios.put(uploadUrl, curFile);
@@ -91,7 +94,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
     const videoEl = document.getElementById(filename) as HTMLVideoElement;
     if (!videoEl.paused || videoEl.readyState >= 1) return;
     const { data } = await axios.post(
-      `http://localhost:3333/files/download`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download`,
       {
         filename,
         originalFilename: filename,

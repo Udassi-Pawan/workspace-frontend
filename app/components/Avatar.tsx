@@ -28,7 +28,7 @@ export default function Avatar({ name, classes }: AvatarProps) {
     <div
       className={`flex items-center justify-center  ${generateColor(
         name
-      )} text-white rounded-full ${classes}`}
+      )} text-white rounded-full border-box ${classes}`}
     >
       <p>{name.split(" ")[0][0] + name.split(" ")[1][0]}</p>
     </div>

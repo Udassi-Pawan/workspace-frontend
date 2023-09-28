@@ -10,9 +10,12 @@ export default function page({}: DriveProps) {
   const uploadFileRef = useRef<any>(null);
   const uploadHandler = async function () {
     const curFile = uploadFileRef.current.files[0];
-    const { data } = await axios.post("http://localhost:3333/s3/file", {
-      filetype: curFile.type,
-    });
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/s3/file`,
+      {
+        filetype: curFile.type,
+      }
+    );
     console.log(data);
     const { uploadUrl } = data;
     await axios.put(uploadUrl, curFile);
@@ -22,7 +25,7 @@ export default function page({}: DriveProps) {
     if (!session?.user!.email) return;
     (async function () {
       const { data } = await axios.get(
-        "http://localhost:3333/users/" + session?.user!.email
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/` + session?.user!.email
       );
       console.log(data);
       setUser(data);

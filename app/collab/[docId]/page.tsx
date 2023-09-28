@@ -12,7 +12,7 @@ export default function page({ params }: pageProps) {
   const [docName, setDocName] = useState<string | null>(null);
   async function getDocName() {
     const { data } = await axios.get(
-      "http://localhost:3333/doc/single/" + params.docId
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/doc/single/` + params.docId
     );
     setDocName(data.name);
   }

@@ -28,16 +28,20 @@ const handler = NextAuth({
   // },
   callbacks: {
     async redirect({ url, baseUrl }) {
+      console.log(url, baseUrl);
       return "/";
     },
     async jwt({ token, account, user }) {
       if (account) {
-        const res = await fetch("http://localhost:3333/auth/login", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${account?.id_token}`,
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${account?.id_token}`,
+            },
+          }
+        );
         const resParsed = await res.json();
         // console.log("RES:", resParsed.authToken);
         console.log("USER:", user);

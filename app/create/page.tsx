@@ -8,15 +8,15 @@ export interface pageProps {}
 export default function page({}: pageProps) {
   const { data: session } = useSession();
   console.log(session);
-  if (session == null) {
-    return redirect("/login");
-  }
+  // if (session == null) {
+  //   return redirect("/login");
+  // }
   const groupName = useRef<HTMLInputElement>(null);
   const [allUsers, setAllUsers] = useState<User[] | null>(null);
   useEffect(() => {
     async function getAllUsers() {
       const _allUsers = await (
-        await fetch("http://localhost:3333/users/all")
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/all`)
       ).json();
       setAllUsers(_allUsers);
     }
@@ -33,7 +33,7 @@ export default function page({}: pageProps) {
       }
     });
     const request = await axios.post(
-      "http://localhost:3333/group/create",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/create`,
       {
         name: groupName.current!.value,
         members,

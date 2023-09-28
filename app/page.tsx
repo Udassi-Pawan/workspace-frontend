@@ -7,7 +7,7 @@ export interface pageProps {}
 export default async function Page({}: pageProps) {
   const session = (await getServerSession(handler)) as { user: any };
   const _allGroups = await (
-    await fetch("http://localhost:3333/group/all")
+    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
   ).json();
   console.log(`all groups`, _allGroups);
 

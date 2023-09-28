@@ -14,7 +14,7 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
   const uploadHandler = async function () {
     const curFile = uploadFileRef.current.files[0];
     const { data } = await axios.post(
-      "http://localhost:3333/files/create",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/create`,
       {
         filetype: curFile.type,
         groups: [groupId],
@@ -33,7 +33,7 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
   console.log(files);
   async function downloadHandler(filename: string, downloadFileName: string) {
     const { data } = await axios.post(
-      `http://localhost:3333/files/download`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download`,
       {
         filename,
         originalFilename: downloadFileName,
