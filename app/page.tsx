@@ -25,7 +25,7 @@ export default async function Page({}: pageProps) {
           <div key={g._id} className="">
             {g.members.find((m: any) => m.email == session.user.email) && (
               <Link href={`/group/${g._id}`}>
-                <a className="mx-5 flex items-center bg-white border border-gray-100 rounded-lg shadow flex-row max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                <div className="mx-5 flex items-center bg-white border border-gray-100 rounded-lg shadow flex-row max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                   <img
                     className="object-cover rounded-t-lg h-auto w-1/5  rounded-none rounded-l-lg"
                     src={g.image}
@@ -39,7 +39,7 @@ export default async function Page({}: pageProps) {
                       {g.description}{" "}
                     </p>
                   </div>
-                </a>{" "}
+                </div>{" "}
               </Link>
             )}
           </div>
