@@ -35,23 +35,21 @@ export default function RootLayout({
         ></Script>
         <Script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></Script>
 
-        {/* <ReduxProvider> */}
-        {/* <SessProvider> */}
-        {/* <SocketProvider> */}
-        {/* <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        > */}
-        {/* <Wrapper> */}
-        {children}
-        {/* </Wrapper> */}
-        {/* </ThemeProvider> */}
-        {/* </SocketProvider> */}
-        {/* <DialogflowMessenger /> */}
-        {/* </SessProvider> */}
-        {/* </ReduxProvider> */}
+        <ReduxProvider>
+          <SessProvider>
+            <SocketProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Wrapper>{children}</Wrapper>
+              </ThemeProvider>
+            </SocketProvider>
+            <DialogflowMessenger />
+          </SessProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
