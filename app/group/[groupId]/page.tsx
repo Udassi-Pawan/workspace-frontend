@@ -77,7 +77,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
   };
 
   useEffect(() => {
-    if (!group) return;
+    if (!group || group == "You are not a member") return;
     socket?.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
     socket?.on(`usersOnline${group?._id}`, userOnlineHandler);
     socket?.on(`callStatus${group?._id}`, (_callStatus: any) => {
@@ -106,9 +106,16 @@ export default function Page({ params }: { params: { groupId: string } }) {
   };
   return (
     <>
-      {group == "You are not a member" ? (
-        <Button onClick={joinHandler}>Join</Button>
-      ) : (
+      {group == "You are not a member" && (
+        <div className="flex flex-col items-center justify-center gap-5 h-[100vh]">
+          <h1 className="text-4xl">Not a member yet.</h1>
+          <Button size={"lg"} onClick={joinHandler}>
+            Join
+          </Button>
+        </div>
+      )}
+
+      {group && group != "You are not a member" && (
         <div className=" flex justify-between">
           <div className=" flex-1 sm:p-3 justify-start flex flex-col ">
             <div className={`flex items-center justify-between `}>
@@ -275,24 +282,14 @@ export default function Page({ params }: { params: { groupId: string } }) {
           </div>
           <div className="md:flex border-l border-gray-300 min-h-screen "></div>
 
-          <GroupInfo members={group?.members} usersOnline={usersOnline!} />
+          <GroupInfo
+            groupId={params.groupId}
+            members={group?.members}
+            usersOnline={usersOnline!}
+          />
           {/* <button onClick={themeHandler}>toggle</button> */}
         </div>
       )}
     </>
   );
-
-  {
-    /* {thisGroupCallStatus?.map((g: any) => (
-        <p key={g.email} className="">
-          {g.name}
-        </p>
-      ))}
-      {thisGroupCallStatus?.length != 0 && thisGroupCallStatus != undefined ? (
-        <button onClick={vidoeHandler}>Accept Call</button>
-      ) : (
-        <button onClick={vidoeHandler}>Start Call</button>
-      )}
-      <GroupDrive groupId={group?._id!} files={group?.files!} /> */
-  }
 }

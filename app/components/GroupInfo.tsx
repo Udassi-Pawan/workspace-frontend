@@ -1,13 +1,35 @@
 import React, { useContext, useEffect } from "react";
 import { SocketContext } from "./SocketProvider";
 import Avatar from "./Avatar";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 export interface OnlineProps {
   members: any;
   usersOnline: User[];
+  groupId: string;
 }
 
-export default function GroupInfo({ members, usersOnline }: OnlineProps) {
+export default function GroupInfo({
+  members,
+  usersOnline,
+  groupId,
+}: OnlineProps) {
+  const { data: session } = useSession();
+  const leaveGroupHandler = async function () {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/leave`,
+      {
+        groupId,
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${session?.authToken}`,
+        },
+      }
+    );
+    console.log(data);
+  };
   return (
     <div className=" hidden md:block pl-2 flex flex-col items-center">
       {/* <div className=""> */}
@@ -26,7 +48,10 @@ export default function GroupInfo({ members, usersOnline }: OnlineProps) {
           </div>
         ))}
       </div>
-      <button className="ml-3 mt-8 bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-2 px-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 hover:brightness-110 hover:animate-pulse active:animate-bounce">
+      <button
+        onClick={leaveGroupHandler}
+        className="ml-3 mt-8 bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-2 px-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 hover:brightness-110 hover:animate-pulse active:animate-bounce"
+      >
         Leave Group
       </button>
     </div>

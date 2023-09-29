@@ -27,7 +27,7 @@ export default async function Page({}: pageProps) {
               <Link href={`/group/${g._id}`}>
                 <a className="mx-5 flex items-center bg-white border border-gray-100 rounded-lg shadow flex-row max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                   <img
-                    className="object-cover rounded-t-lg h-auto w-2/5 sm:w-1/5 rounded-none rounded-l-lg"
+                    className="object-cover rounded-t-lg h-auto w-1/5  rounded-none rounded-l-lg"
                     src={g.image}
                     alt=""
                   />
