@@ -76,17 +76,14 @@ export default function Page({ params }: { params: { groupId: string } }) {
   useEffect(() => {
     if (typeof window !== undefined) setMyNavigator(window.navigator);
   }, [typeof window]);
-  useEffect(() => {
-    import("peerjs").then(({ default: Peer }) => {
-      // Do your stuff here
-    });
-  }, []);
+
   const [streamForMediapipe, setStreamForMediapipe] =
     useState<null | MediaStream>(null);
   const [backgroundBlur, setBackgroundBlur] = useState<boolean>(false);
   const [myVideo, setMyVideo] = useState<boolean>(true);
   const [myAudio, setMyAudio] = useState<boolean>(false);
   const canvasRef = useRef<any>();
+  const whoToCall = useRef<any>();
   const contextRef = useRef<any>();
   const inputVideoRef = useRef<any>();
   const { data: session } = useSession();
@@ -144,11 +141,11 @@ export default function Page({ params }: { params: { groupId: string } }) {
       setStreamForMediapipe(null);
     } catch (e) {}
   }
+
   useEffect(() => {
+    console.log("inside", peer);
     if (!socket || !peer) return;
 
-    console.log(socket);
-    console.log("peer", peer._id);
     peer.on("call", async (mediaConnection: any) => {
       console.log("call", mediaConnection);
       const _stream = myStreamsUpdated.current;
@@ -168,7 +165,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
       setUsersOnline(usersOnline);
       setThisGroupCallStatus(callStatus);
     };
-
+    console.log("getting users :");
     socket.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
     socket.on(`usersOnline${params.groupId}`, userOnlineHandler);
     socket.on(`callStatus${params.groupId}`, (_callStatus: any) => {
@@ -181,9 +178,24 @@ export default function Page({ params }: { params: { groupId: string } }) {
       socket.off(`usersOnline${params.groupId}`);
       peer.off("call");
     };
-  }, [socket, peer, params.groupId]);
+  }, [socket?.id, peer]);
 
   const acceptHandler = async function () {
+    const _stream = await myNavigator.mediaDevices.getUserMedia({
+      video: videoConstraints,
+      audio: true,
+    });
+    const call = peer.call(whoToCall.current.value, _stream, {
+      metadata: { name: session?.user!.name, returnVideo: true },
+    });
+    call.on("stream", (remoteStream: any) => {
+      console.log("stream received", remoteStream);
+      setPeersUpdated({
+        stream: remoteStream,
+        metadata: { name: session?.user!.name },
+      });
+    });
+    return;
     setOnCall(true);
     socket.emit("acceptCall", { groupId: params.groupId });
     myNavigator.mediaDevices
@@ -201,8 +213,8 @@ export default function Page({ params }: { params: { groupId: string } }) {
           const call = peer.call(user.clientId, _stream, {
             metadata: { name: session?.user!.name, returnVideo: true },
           });
-          setOnCall(true);
           call.on("stream", (remoteStream: any) => {
+            console.log("stream received", remoteStream);
             setPeersUpdated({
               stream: remoteStream,
               metadata: { name: user.name },
@@ -402,6 +414,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
               ))}
             </div>
             <Button onClick={acceptHandler}>Accept Call</Button>
+            <input ref={whoToCall} placeholder="kisko"></input>
           </div>
         )}
 

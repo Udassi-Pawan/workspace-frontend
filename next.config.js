@@ -18,6 +18,13 @@ const nextConfig = {
 module.exports = {
   ...nextConfig,
   webpack: (config, { isServer }) => {
+    config.resolve.fallback = {
+      // if you miss it, all the other options in fallback, specified
+      // by next.js will be dropped.
+      ...config.resolve.fallback,
+
+      fs: false, // the solution
+    };
     if (!isServer) {
       config.externals.push({
         bufferutil: "bufferutil",

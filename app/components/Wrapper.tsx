@@ -10,6 +10,7 @@ export default function Wrapper({ children }: WrapperProps) {
   let { socket } = useContext(SocketContext);
   const { data: session } = useSession();
   useEffect(() => {
+    if(!socket) return
     socket?.emit("join", (callStatus: any) => {
       console.log(callStatus);
     });
