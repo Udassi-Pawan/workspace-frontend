@@ -83,7 +83,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
   const [myVideo, setMyVideo] = useState<boolean>(true);
   const [myAudio, setMyAudio] = useState<boolean>(false);
   const canvasRef = useRef<any>();
-  const whoToCall = useRef<any>();
   const contextRef = useRef<any>();
   const inputVideoRef = useRef<any>();
   const { data: session } = useSession();
@@ -99,7 +98,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
   const userVideo: any = useRef();
   const peersUpdated = useRef(peers);
   const setPeersUpdated = async function (data: any) {
-    console.log("receieved peer update", data);
     if (peersUpdated.current.find((el: any) => el.stream.id == data.stream.id))
       return;
     peersUpdated.current = [...peersUpdated.current, data];
@@ -112,7 +110,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
     if (video == false && audio == false) return;
     myNavigator.mediaDevices
       .getUserMedia({
-        video: videoConstraints,
+        video: video && videoConstraints,
         audio: true,
       })
       .then((_stream: any) => {
@@ -143,7 +141,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
   }
 
   useEffect(() => {
-    console.log("inside", peer);
     if (!socket || !peer) return;
 
     peer.on("call", async (mediaConnection: any) => {
@@ -181,21 +178,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
   }, [socket?.id, peer]);
 
   const acceptHandler = async function () {
-    const _stream = await myNavigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
-      audio: true,
-    });
-    const call = peer.call(whoToCall.current.value, _stream, {
-      metadata: { name: session?.user!.name, returnVideo: true },
-    });
-    call.on("stream", (remoteStream: any) => {
-      console.log("stream received", remoteStream);
-      setPeersUpdated({
-        stream: remoteStream,
-        metadata: { name: session?.user!.name },
-      });
-    });
-    return;
     setOnCall(true);
     socket.emit("acceptCall", { groupId: params.groupId });
     myNavigator.mediaDevices
@@ -414,7 +396,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
               ))}
             </div>
             <Button onClick={acceptHandler}>Accept Call</Button>
-            <input ref={whoToCall} placeholder="kisko"></input>
           </div>
         )}
 

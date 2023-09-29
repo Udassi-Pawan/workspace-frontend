@@ -45,7 +45,6 @@ export function SocketProvider({ children }: SocketProviderProps) {
   const [peer, setPeer] = useState<any>(null);
   const [socketId, setSocketId] = useState<any>(null);
   const { data: session } = useSession();
-  console.log("peer in socket provider ", peer);
   useEffect(() => {
     if (session) {
       const client = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
@@ -57,23 +56,22 @@ export function SocketProvider({ children }: SocketProviderProps) {
           },
         },
       });
-      setSocket(client);
-      setSocketId(client.id);
+      const clientPromise = new Promise((resolve) => {
+        client.on("connect", () => {
+          resolve(client);
+          console.log("chek client here", client);
+          import("peerjs").then(({ default: Peer }) => {
+            const mypeer = new Peer(client.id, {
+              "config": { "iceServers": iceServers },
+            });
+            setSocket(client);
+            setPeer(mypeer);
+          });
+        });
+      });
     }
   }, [session?.authToken]);
 
-  useEffect(() => {
-    if (socket) {
-      console.log("socketId now", socket.id);
-      import("peerjs").then(({ default: Peer }) => {
-        const mypeer = new Peer(socket.id, {
-          "config": { "iceServers": iceServers },
-        });
-        setPeer(mypeer);
-        console.log("mypeer", mypeer);
-      });
-    }
-  }, [socket]);
   return (
     <SocketContext.Provider value={{ socket, peer }}>
       {children}
