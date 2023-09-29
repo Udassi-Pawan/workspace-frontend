@@ -323,11 +323,11 @@ const MenuBarIcon = ({ editor }: any) => [
 ];
 
 export function MenuBar({ editor }: any) {
+  const MenuBarIconValue = MenuBarIcon({ editor });
+  const [open, setOpen] = useState<boolean>(true);
   if (!editor) {
     return null;
   }
-  const MenuBarIconValue = MenuBarIcon({ editor });
-  const [open, setOpen] = useState<boolean>(true);
 
   return (
     <div className="overflow-y-auto max-h-[300px] md:max-h-[none] flex items-center gap-2 bg-black p-2 text-white">

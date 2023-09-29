@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
 
 export interface DriveProps {}
-export default function page({}: DriveProps) {
+export default function Page({}: DriveProps) {
   const [user, setUser] = useState<User | null>(null);
   const { data: session } = useSession();
   const uploadFileRef = useRef<any>(null);
@@ -30,7 +30,7 @@ export default function page({}: DriveProps) {
       console.log(data);
       setUser(data);
     })();
-  }, [session?.user?.email]);
+  }, [session?.user]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">

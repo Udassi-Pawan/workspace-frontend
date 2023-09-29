@@ -71,7 +71,16 @@ const Video = ({ stream }: { stream: any }) => {
   );
 };
 export interface pageProps {}
-export default function page({ params }: { params: { groupId: string } }) {
+export default function Page({ params }: { params: { groupId: string } }) {
+  const [myNavigator, setMyNavigator] = useState<any>(null);
+  useEffect(() => {
+    if (typeof window !== undefined) setMyNavigator(window.navigator);
+  }, [typeof window]);
+  useEffect(() => {
+    import("peerjs").then(({ default: Peer }) => {
+      // Do your stuff here
+    });
+  }, []);
   const [streamForMediapipe, setStreamForMediapipe] =
     useState<null | MediaStream>(null);
   const [backgroundBlur, setBackgroundBlur] = useState<boolean>(false);
@@ -104,7 +113,7 @@ export default function page({ params }: { params: { groupId: string } }) {
   const [thisGroupCallStatus, setThisGroupCallStatus] = useState<any>(null);
   async function callEverybody(video: boolean, audio: boolean) {
     if (video == false && audio == false) return;
-    navigator.mediaDevices
+    myNavigator.mediaDevices
       .getUserMedia({
         video: videoConstraints,
         audio: true,
@@ -172,12 +181,12 @@ export default function page({ params }: { params: { groupId: string } }) {
       socket.off(`usersOnline${params.groupId}`);
       peer.off("call");
     };
-  }, [socket, peer]);
+  }, [socket, peer, params.groupId]);
 
   const acceptHandler = async function () {
     setOnCall(true);
     socket.emit("acceptCall", { groupId: params.groupId });
-    navigator.mediaDevices
+    myNavigator.mediaDevices
       .getUserMedia({
         video: videoConstraints,
         audio: true,
@@ -208,7 +217,7 @@ export default function page({ params }: { params: { groupId: string } }) {
     setMyVideo(true);
     setBackgroundBlur(true);
     contextRef.current = canvasRef.current?.getContext("2d");
-    navigator.mediaDevices
+    myNavigator.mediaDevices
       .getUserMedia({
         video: videoConstraints,
         audio: false,
@@ -241,7 +250,7 @@ export default function page({ params }: { params: { groupId: string } }) {
     };
 
     const canvasStream = canvasRef.current.captureStream();
-    const audioStream = await navigator.mediaDevices.getUserMedia({
+    const audioStream = await myNavigator.mediaDevices.getUserMedia({
       audio: true,
     });
 
@@ -309,7 +318,7 @@ export default function page({ params }: { params: { groupId: string } }) {
   const startHandler = async () => {
     setOnCall(true);
     setMyVideo(true);
-    const _stream = await navigator.mediaDevices.getUserMedia({
+    const _stream = await myNavigator.mediaDevices.getUserMedia({
       video: myVideo ? videoConstraints : false,
       audio: true,
     });
@@ -332,7 +341,7 @@ export default function page({ params }: { params: { groupId: string } }) {
     callEverybody(true, myAudio);
   }
   async function shareScreenHandler() {
-    const screenStream = await navigator.mediaDevices.getDisplayMedia(
+    const screenStream = await myNavigator.mediaDevices.getDisplayMedia(
       displayMediaOptions
     );
     thisGroupCallStatus.forEach((user: any) => {

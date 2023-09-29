@@ -23,7 +23,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import Gapcursor from "@tiptap/extension-gapcursor";
 import Highlight from "@tiptap/extension-highlight";
-import { MenuBar } from "@/app/tiptap/page";
+import { MenuBar } from "./Tiptap";
 let provider: any;
 
 const DocById = ({ docId, docName }: { docId: string; docName: string }) => {

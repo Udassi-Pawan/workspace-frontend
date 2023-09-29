@@ -37,7 +37,7 @@ export default function Collab({
         <div className="flex justify-center m-2 gap-5 flex-wrap">
           {docs?.map((d) =>
             d ? (
-              <div className="">
+              <div key={d._id} className="">
                 <Link key={d._id} href={"/collab/" + d._id}>
                   <a className="relative inline-block px-4 py-2 font-medium group">
                     <span className="absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-black group-hover:-translate-x-0 group-hover:-translate-y-0"></span>

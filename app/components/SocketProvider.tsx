@@ -8,18 +8,23 @@ export interface SocketProviderProps {
 }
 
 import { createContext, useState } from "react";
-import Peer from "peerjs";
 
 const SocketContext = createContext<any>(null);
 export { SocketContext };
 
 export function SocketProvider({ children }: SocketProviderProps) {
+  const [myPeer, setMyPeer] = useState<any>(null);
+  useEffect(() => {
+    import("peerjs").then(({ default: Peer }) => {
+      setMyPeer(Peer);
+    });
+  }, []);
   const [socket, setSocket] = useState<any>(null);
   const [peer, setPeer] = useState<any>(null);
   const { data: session } = useSession();
   //   console.log("session in ", session);
   useEffect(() => {
-    if (session) {
+    if (session && myPeer) {
       const client = io("http://127.0.0.1:3333", {
         transportOptions: {
           polling: {
@@ -31,11 +36,11 @@ export function SocketProvider({ children }: SocketProviderProps) {
       });
       setSocket(client);
       setTimeout(function () {
-        const mypeer = new Peer(client.id);
+        const mypeer = new myPeer(client.id);
         setPeer(mypeer);
       }, 100);
     }
-  }, [typeof session]);
+  }, [session, myPeer]);
 
   return (
     <SocketContext.Provider value={{ socket, peer }}>

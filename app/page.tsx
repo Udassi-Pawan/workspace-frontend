@@ -22,7 +22,7 @@ export default async function Page({}: pageProps) {
       <div className="flex flex-col items-center justify-center gap-5">
         <h1 className="text-5xl font-bold">My Groups</h1>
         {_allGroups?.map((g: any) => (
-          <div className="">
+          <div key={g._id} className="">
             {g.members.find((m: any) => m.email == session.user.email) && (
               <Link href={`/group/${g._id}`}>
                 <a className="mx-5 flex items-center bg-white border border-gray-100 rounded-lg shadow flex-row max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
@@ -48,7 +48,7 @@ export default async function Page({}: pageProps) {
       <div className="flex flex-col items-center justify-center gap-5">
         <h1 className="text-5xl font-bold mb-2 text-center">Explore Groups</h1>
         {_allGroups?.map((g: any) => (
-          <div className="">
+          <div key={g._id} className="">
             {!g.members.find((m: any) => m.email == session.user.email) && (
               <Link href={`/group/${g._id}`}>
                 <div

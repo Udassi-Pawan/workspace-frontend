@@ -44,7 +44,7 @@ function getClassForNavButtons(color: string, curPage: string, name: string) {
 export default function Page({ params }: { params: { groupId: string } }) {
   const { data: session } = useSession();
   let { socket } = useContext(SocketContext);
-  const [group, setGroup] = useState<Group | null | string>(null);
+  const [group, setGroup] = useState<Group | null>(null);
   const [usersOnline, setUsersOnline] = useState<User[] | null>(null);
   const [thisGroupCallStatus, setThisGroupCallStatus] = useState<any>(null);
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
       setGroup(groupFromDb.data);
     }
     getData();
-  }, [session?.authToken]);
+  }, [session?.authToken, params.groupId, session]);
   const { setTheme, theme } = useTheme();
   const themeHandler = async function () {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -77,14 +77,14 @@ export default function Page({ params }: { params: { groupId: string } }) {
   };
 
   useEffect(() => {
-    if (!group || group == "You are not a member") return;
+    if (!group || group._id == "none") return;
     socket?.emit("usersOnline", { groupId: params.groupId }, userOnlineHandler);
     socket?.on(`usersOnline${group?._id}`, userOnlineHandler);
     socket?.on(`callStatus${group?._id}`, (_callStatus: any) => {
       console.log("received callstatus", _callStatus);
       setThisGroupCallStatus(_callStatus);
     });
-  }, [socket, group?._id]);
+  }, [socket, group?._id, group, params.groupId]);
   useEffect(() => {
     setCurTheme(theme);
   }, [theme]);
@@ -106,7 +106,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
   };
   return (
     <>
-      {group == "You are not a member" && (
+      {group?._id == "none" && (
         <div className="flex flex-col items-center justify-center gap-5 h-[100vh]">
           <h1 className="text-4xl">Not a member yet.</h1>
           <Button size={"lg"} onClick={joinHandler}>
@@ -115,7 +115,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
         </div>
       )}
 
-      {group && group != "You are not a member" && (
+      {group && group._id != "none" && (
         <div className=" flex justify-between">
           <div className=" flex-1 sm:p-3 justify-start flex flex-col ">
             <div className={`flex items-center justify-between `}>

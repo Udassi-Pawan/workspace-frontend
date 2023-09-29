@@ -71,7 +71,7 @@ export const useDraw = (
       canvasRef.current?.removeEventListener("touchend", mouseUpHandler);
       canvasRef.current?.removeEventListener("touchmove", handler);
     };
-  }, [onDraw]);
+  }, [onDraw, mouseDown]);
 
   return { canvasRef, onMouseDown, clear };
 };

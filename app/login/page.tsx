@@ -102,22 +102,25 @@ export default function Home() {
           itemClass=""
           keyBoardControl
           minimumTouchDrag={20}
-          pauseOnHover
-          renderArrowsWhenDisabled={false}
-          renderButtonGroupOutside={false}
-          renderDotsOutside={false}
+          // pauseOnHover
+          // renderArrowsWhenDisabled={false}
+          // renderButtonGroupOutside={false}
+          // renderDotsOutside={false}
           responsive={responsive}
-          rewind={false}
-          rewindWithAnimation={false}
-          rtl={false}
-          shouldResetAutoplay
+          // rewind={false}
+          // rewindWithAnimation={false}
+          // rtl={false}
+          // shouldResetAutoplay
           showDots={false}
           sliderClass=""
           swipeable
           ssr={false}
         >
           {posts.map((p) => (
-            <div className=" flex flex-col items-center justify-center text-center">
+            <div
+              key={p.image}
+              className=" flex flex-col items-center justify-center text-center"
+            >
               <img
                 className="rounded-2xl"
                 src={p.image}
@@ -129,7 +132,10 @@ export default function Home() {
                 {p.heading}
               </h2>{" "}
               {p.para.map((t) => (
-                <p className="text-sm"> {t}</p>
+                <p key={t} className="text-sm">
+                  {" "}
+                  {t}
+                </p>
               ))}
             </div>
           ))}
