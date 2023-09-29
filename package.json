@@ -74,6 +74,9 @@
   },
   "devDependencies": {
     "@types/react-color": "^3.0.6",
-    "@types/simple-peer": "^9.11.5"
+    "@types/simple-peer": "^9.11.5",
+    "bufferutil": "^4.0.7",
+    "supports-color": "^8.1.1",
+    "utf-8-validate": "^5.0.10"
   }
 }

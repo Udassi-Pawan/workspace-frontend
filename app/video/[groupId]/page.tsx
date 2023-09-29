@@ -366,164 +366,167 @@ export default function page({ params }: { params: { groupId: string } }) {
   console.log("callStatus", thisGroupCallStatus);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
-      <div className="">
-        <video hidden autoPlay ref={inputVideoRef} />
-        <canvas hidden ref={canvasRef} width={1280} height={720} />
-      </div>
+    <React.Suspense fallback={<h1>Wait</h1>}>
+      <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-y-scroll">
+        <div className="">
+          <video hidden autoPlay ref={inputVideoRef} />
+          <canvas hidden ref={canvasRef} width={1280} height={720} />
+        </div>
 
-      <div className="flex flex-wrap gap-5 items-center justify-center">
-        {peersUpdated.current.map((stream: any, index: any) => {
-          return <Video key={index} stream={stream} />;
-        })}
-      </div>
+        <div className="flex flex-wrap gap-5 items-center justify-center">
+          {peersUpdated.current.map((stream: any, index: any) => {
+            return <Video key={index} stream={stream} />;
+          })}
+        </div>
 
-      {!onCall && thisGroupCallStatus && thisGroupCallStatus.length != 0 && (
-        <div className="flex items-center flex-col gap-5">
-          <p className="text-xl text-bold">In call</p>
-          <div className="flex flex-col  gap-4 ">
-            {thisGroupCallStatus?.map((m: User) => (
-              <div key={m.email} className="flex items-center gap-1">
-                <Avatar classes="w-12 h-12" name={m.name} />
-                <div>
-                  <p>{m.name}</p>
+        {!onCall && thisGroupCallStatus && thisGroupCallStatus.length != 0 && (
+          <div className="flex items-center flex-col gap-5">
+            <p className="text-xl text-bold">In call</p>
+            <div className="flex flex-col  gap-4 ">
+              {thisGroupCallStatus?.map((m: User) => (
+                <div key={m.email} className="flex items-center gap-1">
+                  <Avatar classes="w-12 h-12" name={m.name} />
+                  <div>
+                    <p>{m.name}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <Button onClick={acceptHandler}>Accept Call</Button>
           </div>
-          <Button onClick={acceptHandler}>Accept Call</Button>
-        </div>
-      )}
+        )}
 
-      {!onCall && (!thisGroupCallStatus || thisGroupCallStatus.length == 0) && (
-        <div className="flex flex-col items-center gap-5">
-          <p className="text-xl text-bold">Users Online</p>
-          {usersOnline?.map((m: User) => (
-            <div key={m.email} className="w-full flex items-center gap-1">
-              <Avatar classes="w-12 h-12" name={m.name} />
-              <div>
-                <p>{m.name}</p>
+        {!onCall &&
+          (!thisGroupCallStatus || thisGroupCallStatus.length == 0) && (
+            <div className="flex flex-col items-center gap-5">
+              <p className="text-xl text-bold">Users Online</p>
+              {usersOnline?.map((m: User) => (
+                <div key={m.email} className="w-full flex items-center gap-1">
+                  <Avatar classes="w-12 h-12" name={m.name} />
+                  <div>
+                    <p>{m.name}</p>
+                  </div>
+                </div>
+              ))}
+              <Button onClick={startHandler}>Start Call</Button>
+            </div>
+          )}
+        {onCall && (
+          <>
+            <div className="w-full sm:flex-row flex-col flex gap-5 items-center justify-center">
+              <video
+                className={`${
+                  myVideo ? "" : "hidden"
+                } rounded-full shadow-lg  w-full h-full object-cover `}
+                muted
+                style={{
+                  height: "150px",
+                  width: "150px",
+                }}
+                ref={userVideo}
+                autoPlay
+                playsInline
+              />
+              <div className="flex items-center gap-5 flex-wrap justify-center">
+                {!myVideo ? (
+                  <Button
+                    className="bg-red-500 rounded-full hover:bg-red-400"
+                    onClick={turnVideoOnHandler}
+                  >
+                    <Image
+                      src={"/video-off.png"}
+                      alt=""
+                      width="30"
+                      height="30"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    ></Image>
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-blue-500 rounded-full hover:bg-blue-400"
+                    onClick={turnVideoOffHandler}
+                  >
+                    <Image
+                      src={"/video-on.png"}
+                      alt=""
+                      width="30"
+                      height="30"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    ></Image>{" "}
+                  </Button>
+                )}
+                {!myAudio ? (
+                  <Button
+                    className="bg-red-500 rounded-full hover:bg-red-400"
+                    onClick={turnAudioOnHandler}
+                  >
+                    <Image
+                      src={"/mic-off.png"}
+                      alt=""
+                      width="30"
+                      height="30"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    ></Image>{" "}
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-blue-500 rounded-full hover:bg-blue-400"
+                    onClick={turnAudioOffHandler}
+                  >
+                    <Image
+                      src={"/mic-on.png"}
+                      alt=""
+                      width="30"
+                      height="30"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    ></Image>{" "}
+                  </Button>
+                )}
+                {myVideo && !backgroundBlur && (
+                  <Button
+                    className="bg-blue-500 rounded-full hover:bg-blue-400"
+                    onClick={blurBackgroundHandler}
+                  >
+                    <Image
+                      src={"/background-remove.png"}
+                      alt=""
+                      width="30"
+                      height="30"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    ></Image>{" "}
+                  </Button>
+                )}
+                <Button
+                  className="bg-gray-600 rounded-full hover:bg-gray-500"
+                  onClick={shareScreenHandler}
+                >
+                  {" "}
+                  <Image
+                    src={"/share-screen.png"}
+                    alt=""
+                    width="30"
+                    height="30"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                  ></Image>{" "}
+                </Button>
+
+                <Button
+                  className="bg-red-500 rounded-full hover:bg-red-400 px-8"
+                  onClick={endHandler}
+                >
+                  <Image
+                    src={"/end-call.png"}
+                    alt=""
+                    width="30"
+                    height="30"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                  ></Image>{" "}
+                </Button>
               </div>
             </div>
-          ))}
-          <Button onClick={startHandler}>Start Call</Button>
-        </div>
-      )}
-      {onCall && (
-        <>
-          <div className="w-full sm:flex-row flex-col flex gap-5 items-center justify-center">
-            <video
-              className={`${
-                myVideo ? "" : "hidden"
-              } rounded-full shadow-lg  w-full h-full object-cover `}
-              muted
-              style={{
-                height: "150px",
-                width: "150px",
-              }}
-              ref={userVideo}
-              autoPlay
-              playsInline
-            />
-            <div className="flex items-center gap-5 flex-wrap justify-center">
-              {!myVideo ? (
-                <Button
-                  className="bg-red-500 rounded-full hover:bg-red-400"
-                  onClick={turnVideoOnHandler}
-                >
-                  <Image
-                    src={"/video-off.png"}
-                    alt=""
-                    width="30"
-                    height="30"
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  ></Image>
-                </Button>
-              ) : (
-                <Button
-                  className="bg-blue-500 rounded-full hover:bg-blue-400"
-                  onClick={turnVideoOffHandler}
-                >
-                  <Image
-                    src={"/video-on.png"}
-                    alt=""
-                    width="30"
-                    height="30"
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  ></Image>{" "}
-                </Button>
-              )}
-              {!myAudio ? (
-                <Button
-                  className="bg-red-500 rounded-full hover:bg-red-400"
-                  onClick={turnAudioOnHandler}
-                >
-                  <Image
-                    src={"/mic-off.png"}
-                    alt=""
-                    width="30"
-                    height="30"
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  ></Image>{" "}
-                </Button>
-              ) : (
-                <Button
-                  className="bg-blue-500 rounded-full hover:bg-blue-400"
-                  onClick={turnAudioOffHandler}
-                >
-                  <Image
-                    src={"/mic-on.png"}
-                    alt=""
-                    width="30"
-                    height="30"
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  ></Image>{" "}
-                </Button>
-              )}
-              {myVideo && !backgroundBlur && (
-                <Button
-                  className="bg-blue-500 rounded-full hover:bg-blue-400"
-                  onClick={blurBackgroundHandler}
-                >
-                  <Image
-                    src={"/background-remove.png"}
-                    alt=""
-                    width="30"
-                    height="30"
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  ></Image>{" "}
-                </Button>
-              )}
-              <Button
-                className="bg-gray-600 rounded-full hover:bg-gray-500"
-                onClick={shareScreenHandler}
-              >
-                {" "}
-                <Image
-                  src={"/share-screen.png"}
-                  alt=""
-                  width="30"
-                  height="30"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                ></Image>{" "}
-              </Button>
-
-              <Button
-                className="bg-red-500 rounded-full hover:bg-red-400 px-8"
-                onClick={endHandler}
-              >
-                <Image
-                  src={"/end-call.png"}
-                  alt=""
-                  width="30"
-                  height="30"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                ></Image>{" "}
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </React.Suspense>
   );
 }
