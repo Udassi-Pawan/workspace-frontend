@@ -9,7 +9,7 @@ export default async function Page({}: pageProps) {
   const _allGroups = await (
     await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
   ).json();
-  console.log(`all groups`, _allGroups);
+  // console.log(`all groups`, _allGroups);
 
   return (
     <div className="flex flex-col items-center justify-around h-screen overflow-y-scroll">
