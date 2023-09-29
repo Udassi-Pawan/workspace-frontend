@@ -19,7 +19,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
   //   console.log("session in ", session);
   useEffect(() => {
     if (session) {
-      const client = io("http://127.0.0.1:3333", {
+      const client = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
         transportOptions: {
           polling: {
             extraHeaders: {
