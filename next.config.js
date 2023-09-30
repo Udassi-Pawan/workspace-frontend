@@ -15,18 +15,24 @@ const nextConfig = {
   reactStrictMode: true,
 };
 
-// module.exports = {
-//   ...nextConfig,
-//   webpack: (config, { isServer }) => {
-//     if (!isServer) {
-//       config.externals.push({
-//         bufferutil: "bufferutil",
-//         "utf-8-validate": "utf-8-validate",
-//         "supports-color": "supports-color",
-//       });
-//     }
+module.exports = {
+  ...nextConfig,
+  webpack: (config, { isServer }) => {
+    config.resolve.fallback = {
+      // if you miss it, all the other options in fallback, specified
+      // by next.js will be dropped.
+      ...config.resolve.fallback,
 
-//     return config;
-//   },
-// };
-module.exports = nextConfig;
+      fs: false, // the solution
+    };
+    if (!isServer) {
+      config.externals.push({
+        bufferutil: "bufferutil",
+        "utf-8-validate": "utf-8-validate",
+        "supports-color": "supports-color",
+      });
+    }
+
+    return config;
+  },
+};
