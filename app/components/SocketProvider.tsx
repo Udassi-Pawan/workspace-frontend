@@ -43,7 +43,6 @@ const iceServers = [
 export function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<any>(null);
   const [peer, setPeer] = useState<any>(null);
-  const [socketId, setSocketId] = useState<any>(null);
   const { data: session } = useSession();
   useEffect(() => {
     if (session) {

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { requestNotificationPermission } from "../helper/pushNotifications";
 import axios from "axios";
 import { getMessaging, onMessage } from "firebase/messaging";
+import Spinner from "./Spinner";
 
 export interface WrapperProps {
   children: ReactNode;
@@ -76,9 +77,10 @@ export default function Wrapper({ children }: WrapperProps) {
     console.log("joined again");
   }, [socket]);
 
-  return (
-    <div className="flex flex-col relative">
-      {/* <button
+  return <div className="">{children}</div>;
+
+  {
+    /* <button
         onClick={() => signOut()}
         className="BtnLogout w-10 absolute top-2 right-4"
       >
@@ -89,8 +91,6 @@ export default function Wrapper({ children }: WrapperProps) {
         </div>
 
         <div className="textLogout">Logout</div>
-      </button> */}
-      {children}
-    </div>
-  );
+      </button> */
+  }
 }

@@ -8,6 +8,7 @@ import Wrapper from "./components/Wrapper";
 import DialogflowMessenger from "./components/DialogFlowMessenger";
 import Script from "next/script";
 import { ThemeProvider } from "./components/ThemeProvider";
+import SpinnerProvider from "./components/SpinnerProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,7 +68,9 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <Wrapper>{children}</Wrapper>
+                <Wrapper>
+                  <SpinnerProvider>{children}</SpinnerProvider>
+                </Wrapper>
               </ThemeProvider>
             </SocketProvider>
             <DialogflowMessenger />
