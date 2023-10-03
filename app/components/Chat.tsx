@@ -35,6 +35,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
   };
   useEffect(() => {
     setChatHistory(messages);
+    console.log(messages);
   }, [messages]);
   useEffect(() => {
     if (!groupId) return;
@@ -113,10 +114,11 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
     }, 200);
   };
   return (
-    <div className="relative h-full flex flex-col justify-end">
+    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[80vh] md:h-[90vh] justify-end">
+      {/* <div className="relative flex flex-col justify-end"> */}
       <div
-        id="scrollTarget"
-        className="flex flex-auto flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
+        id="messages"
+        className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
       >
         {chatHistory?.map((m) => {
           return (

@@ -105,7 +105,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
     console.log(data);
   };
   return (
-    <>
+    <div>
       {group?._id == "none" && (
         <div className="flex flex-col items-center justify-center gap-5 h-[100vh]">
           <h1 className="text-4xl">Not a member yet.</h1>
@@ -116,8 +116,8 @@ export default function Page({ params }: { params: { groupId: string } }) {
       )}
 
       {group && group._id != "none" && (
-        <div className=" flex justify-between">
-          <div className=" flex-1 sm:p-3 justify-start flex flex-col ">
+        <div className="flex justify-between">
+          <div className="flex-1 sm:p-3 justify-start">
             <div className={`flex items-center justify-between `}>
               <div className="relative flex p-2 items-center space-x-4">
                 <div className="relative">
@@ -261,15 +261,16 @@ export default function Page({ params }: { params: { groupId: string } }) {
               className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
             ></div>
 
-            <div className="h-full mx-3">
-              {curPage == "chat" && (
-                <Chat
-                  messages={group?.history!}
-                  groupId={group?._id!}
-                  curTheme={theme!}
-                />
-              )}
-              {curPage == "drive" && (
+            {/* <div className="mx-3"> */}
+            {/* <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen"> */}
+            {curPage == "chat" && (
+              <Chat
+                messages={group?.history!}
+                groupId={group?._id!}
+                curTheme={theme!}
+              />
+            )}
+            {/* {curPage == "drive" && (
                 <GroupDrive groupId={group?._id!} files={group?.files!} />
               )}
               {curPage == "draw" && group?._id && (
@@ -277,10 +278,10 @@ export default function Page({ params }: { params: { groupId: string } }) {
               )}
               {curPage == "docs" && (
                 <Collab groupId={group?._id!} docs={group?.docs!} />
-              )}
-            </div>
+              )} */}
+            {/* </div> */}
           </div>
-          <div className="md:flex border-l border-gray-300 min-h-screen "></div>
+          {/* <div className="md:flex border-l border-gray-300 min-h-screen "></div> */}
 
           <GroupInfo
             groupId={params.groupId}
@@ -290,6 +291,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
           {/* <button onClick={themeHandler}>toggle</button> */}
         </div>
       )}
-    </>
+    </div>
   );
 }
