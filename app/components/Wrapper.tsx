@@ -2,15 +2,70 @@
 import React, { ReactNode, useContext, useEffect } from "react";
 import { SocketContext } from "./SocketProvider";
 import "./Wrapper.css";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { requestNotificationPermission } from "../helper/pushNotifications";
+import axios from "axios";
+import { getMessaging, onMessage } from "firebase/messaging";
+
 export interface WrapperProps {
   children: ReactNode;
 }
 export default function Wrapper({ children }: WrapperProps) {
   let { socket } = useContext(SocketContext);
-  const { data: session } = useSession();
+  let { data: session } = useSession();
+  // useEffect(() => {
+  //   if (session?.authToken) {
+  //     (async function () {
+  //       const notificationToken = await requestNotificationPermission();
+  //       console.log("notification token ", notificationToken);
+  //       if (notificationToken) {
+  //         await axios.post(
+  //           `${process.env.NEXT_PUBLIC_BACKEND_URL}/notification/token`,
+  //           { token: notificationToken },
+  //           {
+  //             headers: {
+  //               "Authorization": `Bearer ${session?.authToken}`,
+  //             },
+  //           }
+  //         );
+  //       }
+  //     })();
+  //   }
+
+  //   const messaging = getMessaging();
+  //   onMessage(messaging, (payload) => {
+  //     console.log("Message received. ", payload);
+  //     // ...
+  //   });
+  // // }, [session?.authToken]);
+  // useEffect(() => {
+  //   if ("serviceWorker" in navigator) {
+  //     navigator.serviceWorker
+  //       .register("/firebase-messaging-sw.js")
+  //       .then((registration) => {
+  //         registration.pushManager
+  //           .getSubscription()
+  //           .then((res) => console.log(res));
+  //         navigator.serviceWorker.ready.then((registration) => {
+  //           const channel = new BroadcastChannel("myChannel");
+  //           const dataToSend = {
+  //             apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  //             authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  //             projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  //             storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  //             messagingSenderId:
+  //               process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  //             appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  //             measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  //           };
+  //           channel.postMessage(dataToSend);
+  //         });
+  //       });
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if(!socket) return
+    if (!socket) return;
     socket?.emit("join", (callStatus: any) => {
       console.log(callStatus);
     });

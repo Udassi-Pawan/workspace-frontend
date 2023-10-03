@@ -15,7 +15,24 @@ const nextConfig = {
   reactStrictMode: true,
 };
 
-module.exports = {
+const withPWA = require("@ducanh2912/next-pwa").default({
+  dest: "public",
+  disableDevLogs: true,
+
+  fallbacks: {
+    // Failed page requests fallback to this.
+    document: "/~offline",
+  },
+  // importScripts: ["firebase-messaging-sw.js"],
+
+  // disable: process.env.NODE_ENV === "development",
+  // register: true,
+  // scope: "/app",
+  // sw: "service-worker.js",
+  //...
+});
+
+module.exports = withPWA({
   ...nextConfig,
   webpack: (config, { isServer }) => {
     config.resolve.fallback = {
@@ -35,4 +52,4 @@ module.exports = {
 
     return config;
   },
-};
+});
