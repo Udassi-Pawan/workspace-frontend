@@ -114,7 +114,10 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
     }, 200);
   };
   return (
-    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[80vh] md:h-[90vh] justify-end">
+    <div
+      style={{}}
+      className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[75vh] md:h-[85vh] justify-end"
+    >
       {/* <div className="relative flex flex-col justify-end"> */}
       <div
         id="messages"

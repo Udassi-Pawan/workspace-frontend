@@ -117,9 +117,9 @@ export default function Page({ params }: { params: { groupId: string } }) {
 
       {group && group._id != "none" && (
         <div className="flex justify-between">
-          <div className="flex-1 sm:p-3 justify-start">
+          <div className="flex-1 sm:p-1 justify-start">
             <div className={`flex items-center justify-between `}>
-              <div className="relative flex p-2 items-center space-x-4">
+              <div className="relative flex p-1 items-center space-x-4">
                 <div className="relative">
                   <span className="absolute text-green-500 right-0 bottom-0">
                     <svg width="20" height="20">
@@ -256,7 +256,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
 
             <div
               style={{
-                top: "5rem",
+                top: "7rem",
               }}
               className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
             ></div>
@@ -281,7 +281,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
               )} */}
             {/* </div> */}
           </div>
-          {/* <div className="md:flex border-l border-gray-300 min-h-screen "></div> */}
+          <div className="md:flex border-l border-gray-300 min-h-screen "></div>
 
           <GroupInfo
             groupId={params.groupId}
