@@ -261,8 +261,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
               className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
             ></div>
 
-            {/* <div className="mx-3"> */}
-            {/* <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen"> */}
             {curPage == "chat" && (
               <Chat
                 messages={group?.history!}
@@ -270,16 +268,13 @@ export default function Page({ params }: { params: { groupId: string } }) {
                 curTheme={theme!}
               />
             )}
-            {/* {curPage == "drive" && (
-                <GroupDrive groupId={group?._id!} files={group?.files!} />
-              )}
-              {curPage == "draw" && group?._id && (
-                <Draw groupId={group?._id!} />
-              )}
-              {curPage == "docs" && (
-                <Collab groupId={group?._id!} docs={group?.docs!} />
-              )} */}
-            {/* </div> */}
+            {curPage == "drive" && (
+              <GroupDrive groupId={group?._id!} files={group?.files!} />
+            )}
+            {curPage == "draw" && group?._id && <Draw groupId={group?._id!} />}
+            {curPage == "docs" && (
+              <Collab groupId={group?._id!} docs={group?.docs!} />
+            )}
           </div>
           <div className="md:flex border-l border-gray-300 min-h-screen "></div>
 

@@ -1,12 +1,11 @@
 "use client";
-import React, { ReactNode, useContext, useEffect } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { SocketContext } from "./SocketProvider";
 import "./Wrapper.css";
 import { signOut, useSession } from "next-auth/react";
 import { requestNotificationPermission } from "../helper/pushNotifications";
 import axios from "axios";
 import { getMessaging, onMessage } from "firebase/messaging";
-import Spinner from "./Spinner";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -15,7 +14,7 @@ export interface WrapperProps {
 }
 export default function Wrapper({ children }: WrapperProps) {
   let { socket } = useContext(SocketContext);
-  let { data: session } = useSession();
+  const [myTheme, setMyTheme] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   // useEffect(() => {
   //   if (session?.authToken) {
@@ -69,6 +68,9 @@ export default function Wrapper({ children }: WrapperProps) {
   // }, []);
 
   useEffect(() => {
+    setMyTheme(theme!);
+  }, [theme]);
+  useEffect(() => {
     if (!socket) return;
     socket?.emit("join", (callStatus: any) => {
       console.log(callStatus);
@@ -90,12 +92,14 @@ export default function Wrapper({ children }: WrapperProps) {
             <Image
               style={{
                 filter:
-                  theme == "dark"
+                  myTheme == "dark"
                     ? "brightness(0) invert(1)"
                     : "brightness(100%) invert(0)",
               }}
-              className={`${theme == "light" ? "filter-invert" : ""} mt-2`}
-              src={`/${theme}-mode.png`}
+              className={`${myTheme == "light" ? "filter-invert" : ""} mt-2`}
+              src={`${
+                myTheme == "light" ? "/light-mode.png" : "/dark-mode.png"
+              }`}
               height="30"
               width="30"
               alt="light-mode"
