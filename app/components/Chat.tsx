@@ -9,7 +9,6 @@ import { SocketContext } from "./SocketProvider";
 import Avatar from "./Avatar";
 import axios from "axios";
 
-let image: string | ArrayBuffer;
 import ScrollableFeed from "react-scrollable-feed";
 
 import { useSession } from "next-auth/react";
@@ -21,7 +20,9 @@ export interface Chat1Props {
   groupId: string;
 }
 export default function Chat({ messages, groupId }: Chat1Props) {
+  const [image, setImage] = useState<string | ArrayBuffer>("");
   const videoFileRef = useRef<any>(null);
+  const [video, setVideo] = useState<any>(false);
   const { theme } = useTheme();
   const imageFileRef = useRef<any>(null);
   let { socket } = useContext(SocketContext);
@@ -68,7 +69,7 @@ export default function Chat({ messages, groupId }: Chat1Props) {
     reader.readAsDataURL(e.target.files![0]);
     reader.onload = () => {
       console.log(reader.result);
-      image = reader.result!;
+      setImage(reader.result!);
     };
   };
 
@@ -92,7 +93,8 @@ export default function Chat({ messages, groupId }: Chat1Props) {
         setChatHistory((prev) => [...prev!, msg]);
       }
     );
-
+    setImage("");
+    setVideo("");
     setNewMessageText("");
   };
   const playHandler = async function (filename: string) {
@@ -253,7 +255,30 @@ export default function Chat({ messages, groupId }: Chat1Props) {
               type="button"
               className="inline-flex  items-center bg-gray-300 justify-center py-5 h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-200 focus:outline-none"
             >
-              <Image alt="" width={22} height={22} src="/gallery.png" />{" "}
+              <div style={{ position: "relative" }}>
+                <Image alt="" width={22} height={22} src="/gallery.png" />
+                {image && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-10px", // Adjust this value for vertical positioning
+                      right: "-10px", // Adjust this value for horizontal positioning
+                      backgroundColor: "red", // Background color of the superscript
+                      color: "white", // Text color of the superscript
+                      borderRadius: "50%", // Make it a circle
+                      width: "20px", // Width of the superscript circle
+                      height: "20px", // Height of the superscript circle
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "14px", // Font size of the "1"
+                      fontWeight: "bold", // Font weight of the "1"
+                    }}
+                  >
+                    1
+                  </span>
+                )}
+              </div>
             </button>
             <input
               type="file"
@@ -268,27 +293,35 @@ export default function Chat({ messages, groupId }: Chat1Props) {
               type="button"
               className="inline-flex  rounded-r-xl items-center bg-gray-300 justify-center h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-200 focus:outline-none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="30"
-                height="30"
-                viewBox="0 0 100 100"
-                id="video"
-              >
-                <g>
-                  <path d="M86 24H14c-1.1 0-2 .9-2 2v48c0 1.1.9 2 2 2h72c1.1 0 2-.9 2-2V26c0-1.1-.9-2-2-2zM26 72H16v-8h10v8zm0-12H16v-8h10v8zm0-12H16v-8h10v8zm0-12H16v-8h10v8zm44 36H30V28h40v44zm14 0H74v-8h10v8zm0-12H74v-8h10v8zm0-12H74v-8h10v8zm0-12H74v-8h10v8z"></path>
-                </g>
-                <g>
-                  <path
-                    fill="#00F"
-                    d="M804-650v1684H-980V-650H804m8-8H-988v1700H812V-658z"
-                  ></path>
-                </g>
-              </svg>
+              <div style={{ position: "relative" }}>
+                <Image alt="" width={22} height={22} src="/video.png" />
+                {video && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-10px", // Adjust this value for vertical positioning
+                      right: "-10px", // Adjust this value for horizontal positioning
+                      backgroundColor: "red", // Background color of the superscript
+                      color: "white", // Text color of the superscript
+                      borderRadius: "50%", // Make it a circle
+                      width: "20px", // Width of the superscript circle
+                      height: "20px", // Height of the superscript circle
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "14px", // Font size of the "1"
+                      fontWeight: "bold", // Font weight of the "1"
+                    }}
+                  >
+                    1
+                  </span>
+                )}
+              </div>
             </button>
             <input
               type="file"
               accept="video/*"
+              onChange={(e) => setVideo(e.target.files[0]!)}
               ref={videoFileRef}
               style={{ display: "none" }}
             />
