@@ -11,7 +11,7 @@ export default async function Page({}: pageProps) {
   ).json();
 
   return (
-    <div className="flex flex-col items-center justify-around h-screen overflow-y-scroll">
+    <div className="flex flex-col items-center justify-around gap-10 mt-5">
       <Link href="/create">
         <button className="BtnCreate">
           <div className="signCreate">+</div>

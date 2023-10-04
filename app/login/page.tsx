@@ -29,7 +29,7 @@ export default function Home() {
 
   const posts = [
     {
-      image: "/images/1.jpg",
+      image: "https://i.imgur.com/psWpgka.jpeg",
       heading: "Video Calls",
       para: [
         "Video Meeting on the go",
@@ -38,12 +38,12 @@ export default function Home() {
       ],
     },
     {
-      image: "/images/2.jpg",
+      image: "https://i.imgur.com/E5SMd4b.jpeg",
       heading: "Group Chat",
       para: ["Hassle-free communication", "with image and video support"],
     },
     {
-      image: "/images/3.jpg",
+      image: "https://i.imgur.com/HXQ9eW1.jpeg",
       heading: "Collaborate",
       para: ["Create and edit documents,", "draw on canvas,", "all with sync"],
     },
