@@ -107,7 +107,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
   return (
     <div>
       {group?._id == "none" && (
-        <div className="flex flex-col items-center justify-center gap-5 h-[100vh]">
+        <div className="flex flex-col items-center justify-center gap-5 ">
           <h1 className="text-4xl">Not a member yet.</h1>
           <Button size={"lg"} onClick={joinHandler}>
             Join
@@ -117,9 +117,9 @@ export default function Page({ params }: { params: { groupId: string } }) {
 
       {group && group._id != "none" && (
         <div className="flex justify-between">
-          <div className="flex-1 sm:p-1 justify-start">
+          <div className="flex-1  justify-start">
             <div className={`flex items-center justify-between `}>
-              <div className="relative flex p-1 items-center space-x-4">
+              <div className="relative flex items-center space-x-4">
                 <div className="relative">
                   <span className="absolute text-green-500 right-0 bottom-0">
                     <svg width="20" height="20">
@@ -256,9 +256,9 @@ export default function Page({ params }: { params: { groupId: string } }) {
 
             <div
               style={{
-                top: "7rem",
+                top: "7.4rem",
               }}
-              className="my-2  hidden sm:flex absolute left-70 w-screen border-b border-gray-300"
+              className="hidden md:flex absolute left-70 w-screen border-b border-gray-300"
             ></div>
 
             {curPage == "chat" && (
@@ -276,7 +276,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
               <Collab groupId={group?._id!} docs={group?.docs!} />
             )}
           </div>
-          <div className="md:flex border-l border-gray-300 min-h-screen "></div>
+          {/* <div className="md:flex border-l border-gray-300 min-h-screen "></div> */}
 
           <GroupInfo
             groupId={params.groupId}

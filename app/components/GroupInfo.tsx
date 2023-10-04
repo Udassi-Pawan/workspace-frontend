@@ -31,7 +31,7 @@ export default function GroupInfo({
     console.log(data);
   };
   return (
-    <div className=" hidden md:block pl-2 flex flex-col items-center">
+    <div className="border-l border-gray-300 hidden md:block pl-2 mx-1 flex flex-col items-center">
       {/* <div className=""> */}
       <h1 className="ml-7 mt-10 text-2xl">Members</h1>
       {/* </div> */}

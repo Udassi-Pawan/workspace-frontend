@@ -10,10 +10,11 @@ import Avatar from "./Avatar";
 import axios from "axios";
 
 let image: string | ArrayBuffer;
-import EmojiPicker from "emoji-picker-react";
+import ScrollableFeed from "react-scrollable-feed";
+
 import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
+import { Input } from "@/shardcn/components/ui/input";
 export interface Chat1Props {
   messages: Message[];
   groupId: string;
@@ -89,6 +90,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
         console.log("sent", newMessageText);
       }
     );
+    setNewMessageText("");
   };
   const playHandler = async function (filename: string) {
     console.log("play");
@@ -113,16 +115,24 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
       videoEl?.play();
     }, 200);
   };
+  function scrollToBottom() {
+    const messagesContainer = document.getElementById("messages");
+    if (messagesContainer) {
+      // messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      messagesContainer.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
+  }
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
   return (
-    <div
-      style={{}}
-      className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[75vh] md:h-[85vh] justify-end"
-    >
-      {/* <div className="relative flex flex-col justify-end"> */}
-      <div
-        id="messages"
-        className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
-      >
+    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[75vh] md:h-[85vh] justify-end">
+      <ScrollableFeed forceScroll={true} className="space-y-4 p-1">
         {chatHistory?.map((m) => {
           return (
             <div key={m.timestamp}>
@@ -209,27 +219,36 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
             </div>
           );
         })}
-      </div>
+      </ScrollableFeed>
+
       <div
         className={` border-t-2 border-gray-${
           curTheme == "light" ? "200" : "500"
         } px-4 pt-4 mb-2 justify-self-end `}
       >
-        <div className="relative flex align-center">
-          <input
+        <div className="flex align-center">
+          <Input
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendHandler();
+              }
+            }}
+            style={{
+              width: "80%",
+            }}
             value={newMessageText!}
             onChange={(e) => setNewMessageText(e.target.value)}
             placeholder="text"
             type="text"
-            className={`w-full focus:outline-none focus:placeholder-gray-400 text-gray-${
-              curTheme == "light" ? "200" : "0"
+            className={`focus:outline-none focus:placeholder-gray-400 text-gray-${
+              curTheme == "light" ? "200" : "600"
             } placeholder-gray-600 pl-2 bg-gray-300 rounded-md py-3`}
           />
-          <div className="flex align-center absolute right-0 items-center inset-y-0  sm:flex">
+          <div className="flex align-center  items-center sm:flex">
             <button
               onClick={handlePhotoButtonClick}
               type="button"
-              className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
+              className="inline-flex  items-center bg-gray-300 justify-center py-5 h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-200 focus:outline-none"
             >
               <Image alt="" width={22} height={22} src="/gallery.png" />{" "}
             </button>
@@ -244,7 +263,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
             <button
               onClick={handleVideoButtonClick}
               type="button"
-              className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
+              className="inline-flex  rounded-r-xl items-center bg-gray-300 justify-center h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-200 focus:outline-none"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -270,25 +289,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
               ref={videoFileRef}
               style={{ display: "none" }}
             />
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="h-6 w-6 text-gray-600"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-            </button>
+
             <button
               onClick={sendHandler}
               type="button"
