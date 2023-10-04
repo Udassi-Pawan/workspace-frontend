@@ -17,60 +17,18 @@ export default function Wrapper({ children }: WrapperProps) {
   const [myTheme, setMyTheme] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const { data: session } = useSession();
-  // useEffect(() => {
-  //   if (session?.authToken) {
-  //     (async function () {
-  //       const notificationToken = await requestNotificationPermission();
-  //       console.log("notification token ", notificationToken);
-  //       if (notificationToken) {
-  //         await axios.post(
-  //           `${process.env.NEXT_PUBLIC_BACKEND_URL}/notification/token`,
-  //           { token: notificationToken },
-  //           {
-  //             headers: {
-  //               "Authorization": `Bearer ${session?.authToken}`,
-  //             },
-  //           }
-  //         );
-  //       }
-  //     })();
-  //   }
-
-  //   const messaging = getMessaging();
-  //   onMessage(messaging, (payload) => {
-  //     console.log("Message received. ", payload);
-  //     // ...
-  //   });
-  // // }, [session?.authToken]);
-  // useEffect(() => {
-  //   if ("serviceWorker" in navigator) {
-  //     navigator.serviceWorker
-  //       .register("/firebase-messaging-sw.js")
-  //       .then((registration) => {
-  //         registration.pushManager
-  //           .getSubscription()
-  //           .then((res) => console.log(res));
-  //         navigator.serviceWorker.ready.then((registration) => {
-  //           const channel = new BroadcastChannel("myChannel");
-  //           const dataToSend = {
-  //             apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  //             authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  //             projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  //             storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  //             messagingSenderId:
-  //               process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  //             appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  //             measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  //           };
-  //           channel.postMessage(dataToSend);
-  //         });
-  //       });
-  //   }
-  // }, []);
 
   useEffect(() => {
     setMyTheme(theme!);
   }, [theme]);
+  useEffect(() => {
+    setTimeout(() => {
+      document
+        .querySelector("df-messenger")
+        .shadowRoot.querySelector(".df-messenger-wrapper")
+        .querySelector("#widgetIcon").style.bottom = "10vh";
+    }, 1000);
+  }, []);
   useEffect(() => {
     if (!socket) return;
     socket?.emit("join", (callStatus: any) => {
@@ -103,10 +61,6 @@ export default function Wrapper({ children }: WrapperProps) {
         theme={myTheme}
       />
       <div className="my-3 mx-2 sm:m-1 h-10 flex items-center justify-between">
-        <Link href="/">
-          <p className="text-2xl text-bolder">HOME</p>
-        </Link>
-
         <Link href="/">
           <h5 className=" font-bold">Workspace</h5>
         </Link>
