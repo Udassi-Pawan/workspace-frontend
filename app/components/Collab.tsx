@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/shardcn/components/ui/button";
-import DocById from "./DocById";
 import { Input } from "@/shardcn/components/ui/input";
+import { SpinnerContext } from "./SpinnerProvider";
+import { toast } from "react-toastify";
 export default function Collab({
   docs,
   groupId,
@@ -13,9 +14,11 @@ export default function Collab({
   docs: Doc[];
   groupId: string;
 }) {
+  const { setLoading } = useContext(SpinnerContext);
   const docName = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const createHandler = async function () {
+    setLoading(true);
     const req = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/doc/create`,
       {
@@ -24,12 +27,14 @@ export default function Collab({
       }
     );
     console.log(req);
+    setLoading();
+    toast.success("Document Created.");
     router.push(`/collab/${req.data._id}`);
   };
   if (docs) console.log("docs", docs[0]);
   return (
     <>
-      <div className="flex flex-col items-center gap-10">
+      <div className="flex flex-col items-center gap-10 mt-20">
         <div className="flex justify-center m-2 gap-5 flex-wrap">
           {docs?.map((d) =>
             d ? (

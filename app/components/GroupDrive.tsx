@@ -2,16 +2,25 @@ import { Button } from "@/shardcn/components/ui/button";
 import { Input } from "@/shardcn/components/ui/input";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 export interface GroupDriveProps {
   groupId: string;
   files: FileType[];
+  getData: Function;
 }
 import "./GroupDrive.css";
-export default function GroupDrive({ groupId, files }: GroupDriveProps) {
+import { SpinnerContext } from "./SpinnerProvider";
+import { toast } from "react-toastify";
+export default function GroupDrive({
+  groupId,
+  files,
+  getData,
+}: GroupDriveProps) {
   const { data: session } = useSession();
   const uploadFileRef = useRef<any>(null);
+  const { setLoading } = useContext(SpinnerContext);
   const uploadHandler = async function () {
+    setLoading(true);
     const curFile = uploadFileRef.current.files[0];
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/create`,
@@ -29,6 +38,9 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
     console.log(data);
     const { uploadUrl } = data;
     await axios.put(uploadUrl, curFile);
+    getData();
+    setLoading();
+    toast.success("File Uploaded");
   };
   console.log(files);
   async function downloadHandler(filename: string, downloadFileName: string) {
@@ -60,11 +72,7 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
   }
   return (
     <div className="flex flex-col items-center gap-10 w-full">
-      <div className="mx-auto mt-8 flex items-center justify-center gap-5">
-        <Input ref={uploadFileRef} type="file" />
-        <Button onClick={uploadHandler}>Upload</Button>
-      </div>{" "}
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-8 mt-20">
         {files?.map((f) => (
           <div
             key={f._id}
@@ -100,8 +108,15 @@ export default function GroupDrive({ groupId, files }: GroupDriveProps) {
               <p className="text-primary-400"> Uploaded on: {f.timestamp} </p>
             </div>
           </div>
-        ))}
+        ))}{" "}
+        {files && files.length == 0 && (
+          <p className="mt-20 text-center text-2xl">No Files Uploaded Yet</p>
+        )}
       </div>
+      <div className="mx-auto mt-8 flex items-center justify-center gap-5">
+        <Input ref={uploadFileRef} type="file" />
+        <Button onClick={uploadHandler}>Upload</Button>
+      </div>{" "}
     </div>
   );
 }

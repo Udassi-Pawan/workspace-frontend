@@ -261,7 +261,11 @@ export default function Page({ params }: { params: { groupId: string } }) {
               <Chat messages={group?.history!} groupId={group?._id!} />
             )}
             {curPage == "drive" && (
-              <GroupDrive groupId={group?._id!} files={group?.files!} />
+              <GroupDrive
+                groupId={group?._id!}
+                files={group?.files!}
+                getData={getData}
+              />
             )}
             {curPage == "draw" && group?._id && <Draw groupId={group?._id!} />}
             {curPage == "docs" && (

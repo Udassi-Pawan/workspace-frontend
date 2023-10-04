@@ -112,9 +112,9 @@ const DocById = ({ docId, docName }: { docId: string; docName: string }) => {
     }
   }, [session]);
   return (
-    <div className="flex flex-col border-black border-4 rounded-b-2xl">
-      <div className="py-1 px-2  bg-gray-200 rounded-2xl text-black">
-        <p className="text-xl text-center font-bold">{docName}</p>
+    <div className="flex flex-col border-primary border-4 rounded-2xl">
+      <div className="py-1 px-2  bg-gray-200 rounded-xl text-black">
+        <p className="text-xl text-center font-bold">{docName + ".wdox"}</p>
       </div>{" "}
       <div style={{ overflowX: "auto" }}>
         <MenuBar editor={editor} />

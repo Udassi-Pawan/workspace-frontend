@@ -115,53 +115,53 @@ const MenuBarIcon = ({ editor }: any) => [
     name: "bold",
     icon: Icons.bold,
     onClick: () => editor.chain().focus().toggleBold().run(),
-    disable: !editor.can().chain().focus().toggleBold().run(),
-    isActive: editor.isActive("bold") ? "is-active text-green-700" : "",
+    disable: !editor?.can().chain().focus().toggleBold().run(),
+    isActive: editor?.isActive("bold") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 2,
     name: "italic",
     icon: Icons.italic,
-    onClick: () => editor.chain().focus().toggleItalic().run(),
-    disable: !editor.can().chain().focus().toggleItalic().run(),
-    isActive: editor.isActive("italic") ? "is-active text-green-700" : "",
+    onClick: () => editor?.chain().focus().toggleItalic().run(),
+    disable: !editor?.can().chain().focus().toggleItalic().run(),
+    isActive: editor?.isActive("italic") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 21,
     name: "underline",
     icon: Icons.underline,
-    onClick: () => editor.chain().focus().toggleUnderline().run(),
+    onClick: () => editor?.chain().focus().toggleUnderline().run(),
     disable: false,
-    isActive: editor.isActive("underline") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("underline") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 3,
     name: "strike",
     icon: Icons.strikethrough,
-    onClick: () => editor.chain().focus().toggleStrike().run(),
-    disable: !editor.can().chain().focus().toggleStrike().run(),
-    isActive: editor.isActive("strike") ? "is-active text-green-700" : "",
+    onClick: () => editor?.chain().focus().toggleStrike().run(),
+    disable: !editor?.can().chain().focus().toggleStrike().run(),
+    isActive: editor?.isActive("strike") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 4,
     name: "code",
     icon: Icons.code,
-    onClick: () => editor.chain().focus().toggleCode().run(),
-    disable: !editor.can().chain().focus().toggleCode().run(),
-    isActive: editor.isActive("code") ? "is-active text-green-700" : "",
+    onClick: () => editor?.chain().focus().toggleCode().run(),
+    disable: !editor?.can().chain().focus().toggleCode().run(),
+    isActive: editor?.isActive("code") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 5,
     name: "heading1",
     icon: Icons.h1,
-    onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    onClick: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(),
     disable: false,
-    isActive: editor.isActive("heading", { level: 1 })
+    isActive: editor?.isActive("heading", { level: 1 })
       ? "is-active text-green-700"
       : "",
     hover: false,
@@ -170,9 +170,9 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 6,
     name: "heading2",
     icon: Icons.h2,
-    onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    onClick: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
     disable: false,
-    isActive: editor.isActive("heading", { level: 2 })
+    isActive: editor?.isActive("heading", { level: 2 })
       ? "is-active text-green-700"
       : "",
     hover: false,
@@ -181,9 +181,9 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 13,
     name: "heading3",
     icon: Icons.h3,
-    onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    onClick: () => editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     disable: false,
-    isActive: editor.isActive("heading", { level: 3 })
+    isActive: editor?.isActive("heading", { level: 3 })
       ? "is-active text-green-700"
       : "",
     hover: false,
@@ -192,9 +192,9 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 14,
     name: "heading4",
     icon: Icons.h4,
-    onClick: () => editor.chain().focus().toggleHeading({ level: 4 }).run(),
+    onClick: () => editor?.chain().focus().toggleHeading({ level: 4 }).run(),
     disable: false,
-    isActive: editor.isActive("heading", { level: 4 })
+    isActive: editor?.isActive("heading", { level: 4 })
       ? "is-active text-green-700"
       : "",
     hover: false,
@@ -203,9 +203,9 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 15,
     name: "heading5",
     icon: Icons.h5,
-    onClick: () => editor.chain().focus().toggleHeading({ level: 5 }).run(),
+    onClick: () => editor?.chain().focus().toggleHeading({ level: 5 }).run(),
     disable: false,
-    isActive: editor.isActive("heading", { level: 5 })
+    isActive: editor?.isActive("heading", { level: 5 })
       ? "is-active text-green-700"
       : "",
     hover: false,
@@ -214,18 +214,18 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 7,
     name: "paragraph",
     icon: Icons.paragraph,
-    onClick: () => editor.chain().focus().setParagraph().run(),
+    onClick: () => editor?.chain().focus().setParagraph().run(),
     disable: false,
-    isActive: editor.isActive("paragraph") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("paragraph") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 8,
     name: "bullet list",
     icon: Icons.ul,
-    onClick: () => editor.chain().focus().toggleBulletList().run(),
+    onClick: () => editor?.chain().focus().toggleBulletList().run(),
     disable: false,
-    isActive: editor.isActive("bulletList")
+    isActive: editor?.isActive("bulletList")
       ? "is-active text-green-700 list-disc"
       : "",
     hover: false,
@@ -234,9 +234,9 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 9,
     name: "ordered list",
     icon: Icons.ol,
-    onClick: () => editor.chain().focus().toggleOrderedList().run(),
+    onClick: () => editor?.chain().focus().toggleOrderedList().run(),
     disable: false,
-    isActive: editor.isActive("orderedList")
+    isActive: editor?.isActive("orderedList")
       ? "is-active text-green-700 list-decimal"
       : "",
     hover: false,
@@ -245,27 +245,27 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 20,
     name: "highlight",
     icon: Icons.bg,
-    onClick: () => editor.chain().focus().toggleHighlight().run(),
+    onClick: () => editor?.chain().focus().toggleHighlight().run(),
     disable: false,
-    isActive: editor.isActive("highlight") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("highlight") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 16,
     name: "align left",
     icon: Icons.alignLeft,
-    onClick: () => editor.chain().focus().setTextAlign("left").run(),
+    onClick: () => editor?.chain().focus().setTextAlign("left").run(),
     disable: false,
-    isActive: editor.isActive({ textAlign: "left" }) ? "is-active" : "",
+    isActive: editor?.isActive({ textAlign: "left" }) ? "is-active" : "",
     hover: false,
   },
   {
     id: 17,
     name: "align center",
     icon: Icons.alignCenter,
-    onClick: () => editor.chain().focus().setTextAlign("center").run(),
+    onClick: () => editor?.chain().focus().setTextAlign("center").run(),
     disable: false,
-    isActive: editor.isActive({ textAlign: "center" })
+    isActive: editor?.isActive({ textAlign: "center" })
       ? "is-active text-green-700 text-center"
       : "",
     hover: false,
@@ -274,36 +274,36 @@ const MenuBarIcon = ({ editor }: any) => [
     id: 18,
     name: "align right",
     icon: Icons.alignRight,
-    onClick: () => editor.chain().focus().setTextAlign("right").run(),
+    onClick: () => editor?.chain().focus().setTextAlign("right").run(),
     disable: false,
-    isActive: editor.isActive({ textAlign: "right" }) ? "is-active" : "",
+    isActive: editor?.isActive({ textAlign: "right" }) ? "is-active" : "",
     hover: false,
   },
   {
     id: 19,
     name: "align justify",
     icon: Icons.alignJustify,
-    onClick: () => editor.chain().focus().setTextAlign("justify").run(),
+    onClick: () => editor?.chain().focus().setTextAlign("justify").run(),
     disable: false,
-    isActive: editor.isActive({ textAlign: "justify" }) ? "is-active" : "",
+    isActive: editor?.isActive({ textAlign: "justify" }) ? "is-active" : "",
     hover: false,
   },
   {
     id: 10,
     name: "code block",
     icon: Icons.codeblock,
-    onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+    onClick: () => editor?.chain().focus().toggleCodeBlock().run(),
     disable: false,
-    isActive: editor.isActive("codeBlock") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("codeBlock") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
     id: 11,
     name: "blockquote",
     icon: Icons.blockquote,
-    onClick: () => editor.chain().focus().toggleBlockquote().run(),
+    onClick: () => editor?.chain().focus().toggleBlockquote().run(),
     disable: false,
-    isActive: editor.isActive("blockquote") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("blockquote") ? "is-active text-green-700" : "",
     hover: false,
   },
   {
@@ -317,7 +317,7 @@ const MenuBarIcon = ({ editor }: any) => [
         .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
         .run(),
     disable: false,
-    isActive: editor.isActive("table") ? "is-active text-green-700" : "",
+    isActive: editor?.isActive("table") ? "is-active text-green-700" : "",
     hover: true,
   },
 ];
@@ -334,9 +334,9 @@ export function MenuBar({ editor }: any) {
       <input
         type="color"
         onInput={(event: any) =>
-          editor.chain().focus().setColor(event.target.value).run()
+          editor?.chain().focus().setColor(event.target.value).run()
         }
-        value={editor.getAttributes("textStyle").color}
+        value={editor?.getAttributes("textStyle").color}
       />
       {MenuBarIconValue.map((item) =>
         item.hover ? (
@@ -432,7 +432,7 @@ function Tiptap(props: TiptapProps) {
 
   useEffect(() => {
     if (editor && editorText) {
-      editor
+      editor?
         .chain()
         .focus()
         .insertContent(editorText)

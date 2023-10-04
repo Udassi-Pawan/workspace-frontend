@@ -6,3 +6,7 @@ export default withAuth({
     signIn: "/login",
   },
 });
+// See "Matching Paths" below to learn more
+export const config = {
+  matcher: ["/group/:id*", "/", "/collab/:docId*", "/create"],
+};
