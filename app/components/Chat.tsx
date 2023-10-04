@@ -15,13 +15,14 @@ import ScrollableFeed from "react-scrollable-feed";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Input } from "@/shardcn/components/ui/input";
+import { useTheme } from "next-themes";
 export interface Chat1Props {
   messages: Message[];
   groupId: string;
-  curTheme: string;
 }
-export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
+export default function Chat({ messages, groupId }: Chat1Props) {
   const videoFileRef = useRef<any>(null);
+  const { theme } = useTheme();
   const imageFileRef = useRef<any>(null);
   let { socket } = useContext(SocketContext);
 
@@ -86,10 +87,12 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
         image,
         video: videoId,
       },
-      (msg: any) => {
+      (msg: Message) => {
         console.log("sent", newMessageText);
+        setChatHistory((prev) => [...prev!, msg]);
       }
     );
+
     setNewMessageText("");
   };
   const playHandler = async function (filename: string) {
@@ -131,7 +134,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
     scrollToBottom();
   }, []);
   return (
-    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[75vh] md:h-[85vh] justify-end">
+    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[75vh]  md:h-[85vh] justify-end">
       <ScrollableFeed forceScroll={true} className="space-y-4 p-1">
         {chatHistory?.map((m) => {
           return (
@@ -223,7 +226,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
 
       <div
         className={` border-t-2 border-gray-${
-          curTheme == "light" ? "200" : "500"
+          theme == "light" ? "200" : "500"
         } px-4 pt-4 mb-2 justify-self-end `}
       >
         <div className="flex align-center">
@@ -241,7 +244,7 @@ export default function Chat({ messages, groupId, curTheme }: Chat1Props) {
             placeholder="text"
             type="text"
             className={`focus:outline-none focus:placeholder-gray-400 text-gray-${
-              curTheme == "light" ? "200" : "600"
+              theme == "light" ? "200" : "600"
             } placeholder-gray-600 pl-2 bg-gray-300 rounded-md py-3`}
           />
           <div className="flex align-center  items-center sm:flex">

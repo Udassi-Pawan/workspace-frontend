@@ -12,6 +12,8 @@ import Draw from "@/app/components/Draw";
 import Collab from "@/app/components/Collab";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { SpinnerContext } from "@/app/components/SpinnerProvider";
+import { toast } from "react-toastify";
 
 const menuItems = [
   {
@@ -42,33 +44,30 @@ function getClassForNavButtons(color: string, curPage: string, name: string) {
 }
 
 export default function Page({ params }: { params: { groupId: string } }) {
+  const { setLoading } = useContext(SpinnerContext);
   const { data: session } = useSession();
   let { socket } = useContext(SocketContext);
   const [group, setGroup] = useState<Group | null>(null);
   const [usersOnline, setUsersOnline] = useState<User[] | null>(null);
   const [thisGroupCallStatus, setThisGroupCallStatus] = useState<any>(null);
+  async function getData() {
+    const groupFromDb = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/single/${params.groupId}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${session?.authToken}`,
+        },
+      }
+    );
+    console.log("groipdata", groupFromDb.data);
+    setGroup(groupFromDb.data);
+  }
   useEffect(() => {
     console.log("session", session);
     if (!session?.authToken) return;
-    async function getData() {
-      const groupFromDb = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/single/${params.groupId}`,
-        {
-          headers: {
-            "Authorization": `Bearer ${session?.authToken}`,
-          },
-        }
-      );
-      console.log("groipdata", groupFromDb.data);
-      setGroup(groupFromDb.data);
-    }
+
     getData();
   }, [session?.authToken, params.groupId, session]);
-  const { setTheme, theme } = useTheme();
-  const themeHandler = async function () {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  };
 
   const userOnlineHandler = ({ usersOnline, callStatus }: any) => {
     setUsersOnline(usersOnline);
@@ -85,12 +84,11 @@ export default function Page({ params }: { params: { groupId: string } }) {
       setThisGroupCallStatus(_callStatus);
     });
   }, [socket, group?._id, group, params.groupId]);
-  useEffect(() => {
-    setCurTheme(theme);
-  }, [theme]);
-  const [curTheme, setCurTheme] = useState(theme);
+
   const [curPage, setCurPage] = useState<string>("chat");
   const joinHandler = async function () {
+    setLoading(true);
+
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/join`,
       {
@@ -103,11 +101,14 @@ export default function Page({ params }: { params: { groupId: string } }) {
       }
     );
     console.log(data);
+    setLoading(false);
+    getData();
+    toast.success("Joined successfully");
   };
   return (
-    <div>
+    <>
       {group?._id == "none" && (
-        <div className="flex flex-col items-center justify-center gap-5 ">
+        <div className="my-auto h-[80vh] flex flex-col items-center justify-center gap-5">
           <h1 className="text-4xl">Not a member yet.</h1>
           <Button size={"lg"} onClick={joinHandler}>
             Join
@@ -121,22 +122,17 @@ export default function Page({ params }: { params: { groupId: string } }) {
             <div className={`flex items-center justify-between `}>
               <div className="relative flex items-center space-x-4">
                 <div className="relative">
-                  <span className="absolute text-green-500 right-0 bottom-0">
-                    <svg width="20" height="20">
-                      <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
-                    </svg>
-                  </span>
                   <img
-                    src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+                    src={group.image}
                     alt=""
-                    className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+                    className="w-10 sm:w-16 h-10 sm:h-16 rounded-full object-cover"
                   />
                 </div>
                 <div className="flex flex-col leading-tight">
                   <div className="text-2xl flex items-center">
                     <span className={`mr-3`}>{group?.name}</span>
                   </div>
-                  <span className={`text-md`}>description</span>
+                  <span className={`text-xs w-1/3 h-1/3`}>description</span>
                 </div>
               </div>
               <>
@@ -262,11 +258,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
             ></div>
 
             {curPage == "chat" && (
-              <Chat
-                messages={group?.history!}
-                groupId={group?._id!}
-                curTheme={theme!}
-              />
+              <Chat messages={group?.history!} groupId={group?._id!} />
             )}
             {curPage == "drive" && (
               <GroupDrive groupId={group?._id!} files={group?.files!} />
@@ -286,6 +278,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
           {/* <button onClick={themeHandler}>toggle</button> */}
         </div>
       )}
-    </div>
+    </>
   );
 }

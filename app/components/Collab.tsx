@@ -30,10 +30,6 @@ export default function Collab({
   return (
     <>
       <div className="flex flex-col items-center gap-10">
-        <div className="mx-auto mt-8 flex items-center justify-center gap-5">
-          <Input ref={docName} placeholder="name" />
-          <Button onClick={createHandler}>Create</Button>
-        </div>
         <div className="flex justify-center m-2 gap-5 flex-wrap">
           {docs?.map((d) =>
             d ? (
@@ -56,6 +52,15 @@ export default function Collab({
               ""
             )
           )}
+          {docs && docs.length == 0 && (
+            <p className="mt-20 text-center text-2xl">
+              No Documents Created Yet
+            </p>
+          )}
+        </div>
+        <div className="mx-auto mt-8 flex items-center justify-center gap-5">
+          <Input ref={docName} placeholder="name" />
+          <Button onClick={createHandler}>Create</Button>
         </div>
       </div>
     </>

@@ -14,7 +14,6 @@ import { Textarea } from "@/shardcn/components/ui/textarea";
 import { SpinnerContext } from "../components/SpinnerProvider";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 var validator = require("validator");
 
 let image: string | ArrayBuffer;
@@ -56,9 +55,7 @@ export default function Page({}: pageProps) {
     if (validator.isEmpty(groupDesc.current?.value)) {
       return toast.error("Please Enter a Group Description");
     }
-
     setLoading(true);
-    if (!groupName.current!.value) return alert("name empty");
     const members: string[] = [];
     allUsers?.map((u) => {
       if (u.email == session?.user?.email) return;

@@ -3,6 +3,10 @@ import { SocketContext } from "./SocketProvider";
 import Avatar from "./Avatar";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import ScrollableFeed from "react-scrollable-feed";
+import { SpinnerContext } from "./SpinnerProvider";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export interface OnlineProps {
   members: any;
@@ -15,8 +19,11 @@ export default function GroupInfo({
   usersOnline,
   groupId,
 }: OnlineProps) {
+  const router = useRouter();
   const { data: session } = useSession();
+  const { setLoading } = useContext(SpinnerContext);
   const leaveGroupHandler = async function () {
+    setLoading(true);
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/leave`,
       {
@@ -28,25 +35,28 @@ export default function GroupInfo({
         },
       }
     );
+    setLoading(false);
+    toast.success("Group left");
+    router.push("/");
     console.log(data);
   };
   return (
     <div className="border-l border-gray-300 hidden md:block pl-2 mx-1 flex flex-col items-center">
-      {/* <div className=""> */}
       <h1 className="ml-7 mt-10 text-2xl">Members</h1>
-      {/* </div> */}
-      <div className="flex flex-col  gap-4 mt-11">
-        {members?.map((m: User) => (
-          <div key={m._id} className="flex items-center gap-1">
-            <Avatar classes="w-12 h-12" name={m.name} />
-            <div>
-              <p>{m.name}</p>
-              <p className="text-blue-300 ">
-                {usersOnline?.find((u) => u.email == m.email) ? "online" : ""}
-              </p>
+      <div className="mt-5 h-[55vh] md:h-[65vh] ">
+        <ScrollableFeed className="space-y-4">
+          {members?.map((m: User) => (
+            <div key={m._id} className="flex items-center gap-1">
+              <Avatar classes="w-12 h-12" name={m.name} />
+              <div>
+                <p>{m.name}</p>
+                <p className="text-blue-300 ">
+                  {usersOnline?.find((u) => u.email == m.email) ? "online" : ""}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </ScrollableFeed>
       </div>
       <button
         onClick={leaveGroupHandler}
