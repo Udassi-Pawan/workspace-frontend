@@ -8,6 +8,7 @@ import axios from "axios";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
 
 export interface WrapperProps {
   children: ReactNode;
@@ -84,9 +85,14 @@ export default function Wrapper({ children }: WrapperProps) {
 
   return (
     <div className="">
-      <div className="p-1 h-10 flex items-center justify-between">
-        <p className="text-xl text-bolder">HOME</p>
-        <p>Workspace</p>
+      <div className="my-3 mx-2 sm:m-1 h-10 flex items-center justify-between">
+        <Link href="/">
+          <p className="text-2xl text-bolder">HOME</p>
+        </Link>
+
+        <Link href="/">
+          <h5 className=" font-bold">Workspace</h5>
+        </Link>
         <div className="flex items-center gap-2">
           <button onClick={() => setTheme(theme == "dark" ? "light" : "dark")}>
             <Image
@@ -96,7 +102,7 @@ export default function Wrapper({ children }: WrapperProps) {
                     ? "brightness(0) invert(1)"
                     : "brightness(100%) invert(0)",
               }}
-              className={`${myTheme == "light" ? "filter-invert" : ""} mt-2`}
+              className={`${myTheme == "light" ? "filter-invert" : ""}`}
               src={`${
                 myTheme == "light" ? "/light-mode.png" : "/dark-mode.png"
               }`}
@@ -107,7 +113,7 @@ export default function Wrapper({ children }: WrapperProps) {
           </button>
           <button
             onClick={() => signOut()}
-            className="BtnLogout w-10 mt-5 mb-2"
+            className="BtnLogout w-10 mb-2 mt-2"
           >
             <div className="signLogout">
               <svg viewBox="0 0 512 512">

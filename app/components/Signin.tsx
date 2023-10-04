@@ -8,9 +8,9 @@ const Signin = () => {
 
   if (session && session.user) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <p>{session.user.name}</p>
-        <button onClick={() => signOut()}> sign out </button>
+      <div className="sm:m-5 flex flex-col items-center justify-center gap-2">
+        <p className="text-2xl">Welcome, {session.user.name}</p>
+        <Button onClick={() => signOut()}> Logout </Button>
       </div>
     );
   }

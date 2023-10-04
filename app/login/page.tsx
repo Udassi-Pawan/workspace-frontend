@@ -26,11 +26,7 @@ export default function Home() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const { setTheme, theme } = useTheme();
-  const themeHandler = async function () {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  };
+
   const posts = [
     {
       image: "/images/1.jpg",
@@ -72,15 +68,12 @@ export default function Home() {
   };
   return (
     <div>
-      <button onClick={themeHandler}>toggle</button>
-
       <div className="flex flex-col items-center flex-start justify-start gap-2">
-        <h5 className="mt-0 mb-5 font-bold">Workspace</h5>
         <div className="mb-2 text-center flex flex-col items-center justify-center">
           <h1 className="text-6xl font-semibold"> All your work needs,</h1>
           <h1 className="text-6xl font-semibold"> at one place</h1>
         </div>
-        <h5 className="">
+        <h5 className="text-center">
           Work was never so seamless , experience the simplicity
         </h5>
         <div />
@@ -88,7 +81,7 @@ export default function Home() {
         <Signin />
       </div>
 
-      <div className="mt-14">
+      <div className="mt-8">
         <Carousel
           additionalTransfrom={0}
           arrows
