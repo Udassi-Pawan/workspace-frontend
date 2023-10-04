@@ -432,7 +432,7 @@ function Tiptap(props: TiptapProps) {
 
   useEffect(() => {
     if (editor && editorText) {
-      editor?
+      editor
         .chain()
         .focus()
         .insertContent(editorText)
