@@ -9,7 +9,6 @@ export default async function Page({}: pageProps) {
   const _allGroups = await (
     await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
   ).json();
-  // console.log(`all groups`, _allGroups);
 
   return (
     <div className="flex flex-col items-center justify-around h-screen overflow-y-scroll">
@@ -55,11 +54,13 @@ export default async function Page({}: pageProps) {
                   style={{ width: "300px" }}
                   className="flex justify-center gap-5 items-center bg-white border border-gray-100 rounded-lg shadow  hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                 >
-                  <img
-                    className="object-cover rounded-t-lg h-auto w-1/4 sm:w-1/5 rounded-none rounded-l-lg"
-                    src="images/1.jpg"
-                    alt=""
-                  />
+                  {g.image && (
+                    <img
+                      className="object-cover rounded-t-lg h-auto w-1/4 sm:w-1/5 rounded-none rounded-l-lg"
+                      src={g.image}
+                      alt=""
+                    />
+                  )}
                   <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {g.name}
                   </h5>
