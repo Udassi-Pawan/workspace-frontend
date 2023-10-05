@@ -11,6 +11,12 @@ export interface GroupDriveProps {
 import "./GroupDrive.css";
 import { SpinnerContext } from "./SpinnerProvider";
 import { toast } from "react-toastify";
+import TimeAgo from "javascript-time-ago";
+
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addLocale(en);
+const timeAgo = new TimeAgo("en-US");
+
 export default function GroupDrive({
   groupId,
   files,
@@ -105,7 +111,10 @@ export default function GroupDrive({
                 </button>
               </div>
               <p className="text-primary-400"> Added by: {f.owner.name}</p>
-              <p className="text-primary-400"> Uploaded on: {f.timestamp} </p>
+              <p className="text-primary-400">
+                {" "}
+                Uploaded on: {timeAgo.format(f.timestamp)}{" "}
+              </p>
             </div>
           </div>
         ))}{" "}

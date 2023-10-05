@@ -7,6 +7,11 @@ import { Button } from "@/shardcn/components/ui/button";
 import { Input } from "@/shardcn/components/ui/input";
 import { SpinnerContext } from "./SpinnerProvider";
 import { toast } from "react-toastify";
+import TimeAgo from "javascript-time-ago";
+
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addLocale(en);
+const timeAgo = new TimeAgo("en-US");
 export default function Collab({
   docs,
   groupId,
@@ -46,7 +51,7 @@ export default function Collab({
                     <span className="relative text-black group-hover:text-white">
                       <p className="text-base">{d.name}</p>
                       <p className="text-sm text-gray-500">
-                        Last Modified : {d.timestamp}
+                        Last Modified : {timeAgo.format(Number(d.timestamp))}
                       </p>{" "}
                     </span>
                   </div>
