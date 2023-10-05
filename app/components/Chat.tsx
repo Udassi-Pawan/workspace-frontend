@@ -88,10 +88,7 @@ export default function Chat({ messages, groupId }: Chat1Props) {
         image,
         video: videoId,
       },
-      (msg: Message) => {
-        console.log("sent", newMessageText);
-        setChatHistory((prev) => [...prev!, msg]);
-      }
+      (msg: Message) => {}
     );
     setImage("");
     setVideo("");

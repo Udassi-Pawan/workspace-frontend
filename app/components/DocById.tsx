@@ -8,7 +8,7 @@ import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import "./DocById.scss";
@@ -25,92 +25,119 @@ import Gapcursor from "@tiptap/extension-gapcursor";
 import Highlight from "@tiptap/extension-highlight";
 import { MenuBar } from "./Tiptap";
 let provider: any;
+const niceColors = [
+  "#FF5733",
+  "#33FF57",
+  "#5733FF",
+  "#FF33A1",
+  "#33A1FF",
+  "#A1FF33",
+  "#FF33E8",
+  "#33E8FF",
+  "#E8FF33",
+  "#FF3367",
+  "#3367FF",
+  "#67FF33",
+  "#FF33FF",
+  "#33FFFF",
+  "#FFFF33",
+  "#3367A1",
+];
+function getColorForName(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
 
+  const index = Math.abs(hash % niceColors.length);
+  return niceColors[index];
+}
 const DocById = ({ docId, docName }: { docId: string; docName: string }) => {
-  console.log("docId", docId);
   const [editor, setEditor] = useState<any>(null);
   const { data: session } = useSession();
   provider = new HocuspocusProvider({
-    url: `ws://127.0.0.1:1237/document/${docId}`,
+    url: `${process.env.NEXT_PUBLIC_COLLAB_SERVER}/document/${docId}`,
     name: docId,
-    token: "super",
+    token: process.env.NEXT_PUBLIC_COLLAB_SECRET,
   });
 
-  const initiatliseEditor = function () {
-    const _editor = new Editor({
-      extensions: [
-        TextStyle.configure({ types: [ListItem.name] } as any),
-        Color.configure({ types: [TextStyle.name, ListItem.name] }),
-        Document,
-        Paragraph,
-        Highlight,
-        Text,
-        Gapcursor,
-        Table.configure({
-          resizable: true,
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
-        Heading.configure({
-          levels: [1, 2, 3],
-        }),
-        StarterKit.configure({
-          // The Collaboration extension comes with its own history handling
-          history: false,
-          heading: {
+  const initiatliseEditor = useCallback(
+    function () {
+      const _editor = new Editor({
+        extensions: [
+          TextStyle.configure({ types: [ListItem.name] } as any),
+          Color.configure({ types: [TextStyle.name, ListItem.name] }),
+          Document,
+          Paragraph,
+          Highlight,
+          Text,
+          Gapcursor,
+          Table.configure({
+            resizable: true,
+          }),
+          TableRow,
+          TableHeader,
+          TableCell,
+          Heading.configure({
             levels: [1, 2, 3],
+          }),
+          StarterKit.configure({
+            history: false,
+            heading: {
+              levels: [1, 2, 3],
+            },
+            bulletList: {
+              keepMarks: true,
+              keepAttributes: false,
+            },
+            orderedList: {
+              keepMarks: true,
+              keepAttributes: false,
+            },
+          }),
+          TextAlign.configure({
+            types: ["heading", "paragraph"],
+          }),
+          Underline.configure({
+            HTMLAttributes: {
+              class: "my-custom-class",
+            },
+          }),
+          CollaborationCursor.configure({
+            provider,
+            user: {
+              name: session?.user?.name,
+              color: getColorForName(session?.user?.name!),
+            },
+          }),
+          Collaboration.configure({
+            document: provider.document,
+          }),
+        ],
+        autofocus: true,
+        editable: true,
+        editorProps: {
+          attributes: {
+            class: "m-2 focus:outline-none",
           },
-          bulletList: {
-            keepMarks: true,
-            keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
-          },
-          orderedList: {
-            keepMarks: true,
-            keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
-          },
-        }),
-        TextAlign.configure({
-          types: ["heading", "paragraph"],
-        }),
-        Underline.configure({
-          HTMLAttributes: {
-            class: "my-custom-class",
-          },
-        }),
-        CollaborationCursor.configure({
-          provider,
-          user: {
-            name: session?.user?.name,
-            color: "#f783ac",
-          },
-        }),
-        Collaboration.configure({
-          document: provider.document,
-        }),
-      ],
-      autofocus: true,
-      editable: true,
-      editorProps: {
-        attributes: {
-          class: "m-2 focus:outline-none",
         },
-      },
-    });
-    setEditor(_editor);
-  };
+      });
+      setEditor(_editor);
+    },
+    [session?.user?.name]
+  );
 
   useEffect(() => {
     console.log("now requestting ,", docId);
     provider = new HocuspocusProvider({
-      url: `ws://127.0.0.1:1237/document/${docId}`,
+      url: `${process.env.NEXT_PUBLIC_COLLAB_SERVER}/document/${docId}`,
       name: docId,
-      token: "super",
+      token: process.env.NEXT_PUBLIC_COLLAB_SECRET,
     });
     if (session) {
       initiatliseEditor();
     }
-  }, [session]);
+  }, [session?.authToken, docId, initiatliseEditor]);
   return (
     <div className="flex flex-col border-primary border-4 rounded-2xl">
       <div className="py-1 px-2  bg-gray-200 rounded-xl text-black">

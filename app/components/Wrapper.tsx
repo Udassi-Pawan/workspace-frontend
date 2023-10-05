@@ -23,11 +23,12 @@ export default function Wrapper({ children }: WrapperProps) {
   }, [theme]);
   useEffect(() => {
     setTimeout(() => {
-      document
-        .querySelector("df-messenger")
-        .shadowRoot.querySelector(".df-messenger-wrapper")
-        .querySelector("#widgetIcon").style.bottom = "10vh";
-    }, 1000);
+      if (document.querySelector("df-messenger"))
+        document
+          .querySelector("df-messenger")
+          .shadowRoot.querySelector(".df-messenger-wrapper")
+          .querySelector("#widgetIcon").style.bottom = "10vh";
+    }, 2000);
   }, []);
   useEffect(() => {
     if (!socket) return;
