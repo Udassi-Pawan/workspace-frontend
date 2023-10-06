@@ -487,7 +487,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
                 )}
                 {myVideo && !backgroundBlur && (
                   <Button
-                    className="bg-blue-500 rounded-full hover:bg-blue-400"
+                    className="hidden sm:flex bg-blue-500 rounded-full hover:bg-blue-400"
                     onClick={blurBackgroundHandler}
                   >
                     <Image
@@ -500,7 +500,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
                   </Button>
                 )}
                 <Button
-                  className="bg-gray-600 rounded-full hover:bg-gray-500"
+                  className="hidden sm:flex bg-gray-600 rounded-full hover:bg-gray-500"
                   onClick={shareScreenHandler}
                 >
                   {" "}
