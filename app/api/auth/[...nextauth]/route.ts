@@ -28,7 +28,6 @@ const handler = NextAuth({
   // },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      console.log(url, baseUrl);
       return "/";
     },
     async jwt({ token, account, user }) {

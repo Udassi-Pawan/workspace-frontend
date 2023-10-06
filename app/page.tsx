@@ -2,14 +2,19 @@ import { getServerSession } from "next-auth";
 import { handler } from "./api/auth/[...nextauth]/route";
 import Link from "next/link";
 import "./page.css";
+import Sleep from "./components/Sleep";
 export interface pageProps {}
 
 export default async function Page({}: pageProps) {
   const session = (await getServerSession(handler)) as { user: any };
-  const _allGroups = await (
-    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
-  ).json();
-
+  let _allGroups;
+  try {
+    _allGroups = await (
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
+    ).json();
+  } catch (e) {
+    return <Sleep />;
+  }
   return (
     <div className="flex flex-col items-center justify-around gap-10 mt-5">
       <Link href="/create">

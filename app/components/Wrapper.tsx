@@ -23,12 +23,13 @@ export default function Wrapper({ children }: WrapperProps) {
   }, [theme]);
   useEffect(() => {
     setTimeout(() => {
-      if (document.querySelector("df-messenger"))
+      try {
         document
           .querySelector("df-messenger")
           .shadowRoot.querySelector(".df-messenger-wrapper")
           .querySelector("#widgetIcon").style.bottom = "10vh";
-    }, 2000);
+      } catch (e) {}
+    }, 3000);
   }, []);
   useEffect(() => {
     if (!socket) return;
