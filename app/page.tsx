@@ -3,15 +3,20 @@ import { handler } from "./api/auth/[...nextauth]/route";
 import Link from "next/link";
 import "./page.css";
 import Sleep from "./components/Sleep";
+import axios from "axios";
 export interface pageProps {}
 
 export default async function Page({}: pageProps) {
   const session = (await getServerSession(handler)) as { user: any };
   let _allGroups;
   try {
-    _allGroups = await (
-      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`)
-    ).json();
+    const { data } = await axios.request({
+      timeout: 4000,
+      signal: AbortSignal.timeout(4000),
+      method: "GET",
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all`,
+    });
+    _allGroups = data;
   } catch (e) {
     return <Sleep />;
   }

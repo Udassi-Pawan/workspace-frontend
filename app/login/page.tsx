@@ -14,9 +14,12 @@ export default function Home() {
     try {
       (async function () {
         try {
-          const { data } = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`
-          );
+          const { data } = await axios.request({
+            timeout: 4000,
+            signal: AbortSignal.timeout(4000),
+            method: "GET",
+            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`,
+          });
           if (data == "Working") setBackendWorking(data);
           else setBackendWorking("Not Working");
         } catch (e) {
