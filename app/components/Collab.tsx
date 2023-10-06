@@ -40,6 +40,13 @@ export default function Collab({
   return (
     <>
       <div className="flex flex-col items-center gap-10 mt-20">
+        <div className="flex items-center text-center flex-col gap-2">
+          <h2>Documents are automatically synced and saved in realtime.</h2>
+          <h2>
+            Collab Cursor shows the changes being made by other users at the
+            moment.
+          </h2>
+        </div>
         <div className="flex justify-center m-2 gap-5 flex-wrap">
           {docs?.map((d) =>
             d ? (

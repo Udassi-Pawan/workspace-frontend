@@ -48,20 +48,30 @@ export default function Home() {
       image: "/images/1.jpg",
       heading: "Video Calls",
       para: [
-        "Video Meeting on the go",
-        "with screen share",
-        "and background remove",
+        "Video Meeting on the go with",
+        "Screen Share,",
+        "Background Blur,",
+        "Mic and Video toggle",
       ],
     },
     {
       image: "/images/2.jpg",
       heading: "Group Chat",
-      para: ["Hassle-free communication", "with image and video support"],
+      para: [
+        "Hassle-free communication with",
+        "Image and Video support,",
+        "Realtime Notifications",
+      ],
     },
     {
       image: "/images/3.jpg",
       heading: "Collaborate",
-      para: ["Create and edit documents,", "draw on canvas,", "all with sync"],
+      para: [
+        "Upload unlimited files of any size,",
+        "Create and edit documents,",
+        "Draw on canvas,",
+        "all with Realtime Status Sync",
+      ],
     },
   ];
 
@@ -88,7 +98,7 @@ export default function Home() {
         <div>
           <div className="flex flex-col items-center flex-start justify-start gap-2">
             <div className="mb-2 text-center flex flex-col items-center justify-center">
-              <h1 className="text-6xl font-semibold"> All your work needs,</h1>
+              <h1 className="text-6xl font-semibold"> All your work needs</h1>
               <h1 className="text-6xl font-semibold"> at one place</h1>
             </div>
             <h5 className="text-center">

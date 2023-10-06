@@ -97,16 +97,9 @@ const Draw: FC<pageProps> = ({ groupId }) => {
             onChange={(e) => setColor(e.hex)}
           />
         </div>
-
-        {/* <canvas
-        ref={canvasRef}
-        onMouseDown={onMouseDown}
-        onTouchStart={onMouseDown}
-        width={750}
-        height={750}
-        className="border border-black rounded-md"
-      /> */}
-
+        <p className="text-left text-center text-gray-400 mt-5">
+          The Canvas State is synced to the members of the group in realtime.
+        </p>
         <canvas
           ref={canvasRef}
           onMouseDown={onMouseDown}
