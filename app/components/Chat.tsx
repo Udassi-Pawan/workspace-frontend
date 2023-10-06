@@ -15,6 +15,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Input } from "@/shardcn/components/ui/input";
 import { useTheme } from "next-themes";
+import { SpinnerContext } from "./SpinnerProvider";
 export interface Chat1Props {
   messages: Message[];
   groupId: string;
@@ -26,6 +27,7 @@ export default function Chat({ messages, groupId }: Chat1Props) {
   const { theme } = useTheme();
   const imageFileRef = useRef<any>(null);
   let { socket } = useContext(SocketContext);
+  const { setLoading } = useContext(SpinnerContext);
 
   const [chatHistory, setChatHistory] = useState<Message[] | null>(null);
   const [newMessageText, setNewMessageText] = useState<string | null>();
@@ -68,13 +70,15 @@ export default function Chat({ messages, groupId }: Chat1Props) {
     var reader = new FileReader();
     reader.readAsDataURL(e.target.files![0]);
     reader.onload = () => {
-      console.log(reader.result);
       setImage(reader.result!);
     };
   };
 
   const { data: session } = useSession();
   const sendHandler = async function () {
+    if (videoFileRef.current.files.length != 0 || image != "") {
+      setLoading(true);
+    }
     let videoId = "";
     console.log(videoFileRef.current.files.length);
     if (videoFileRef.current.files.length != 0) {
@@ -92,7 +96,9 @@ export default function Chat({ messages, groupId }: Chat1Props) {
     );
     setImage("");
     setVideo("");
+    videoFileRef.current.value = [];
     setNewMessageText("");
+    setLoading();
   };
   const playHandler = async function (filename: string) {
     console.log("play");

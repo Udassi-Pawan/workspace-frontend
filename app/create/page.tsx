@@ -79,7 +79,6 @@ export default function Page({}: pageProps) {
     );
     setLoading(false);
     toast.success("Group Created");
-    router.push(`/group/${data._id}`);
   };
 
   return (
