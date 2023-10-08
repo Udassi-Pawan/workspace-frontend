@@ -8,7 +8,10 @@ export default function Sleep({}: SleepProps) {
         The Backend Server is in sleep mode
       </h1>
       <h1 className="text-3xl font-bold text-center">
-        Please reload a few times to access the site
+        Restarting the server now...
+      </h1>{" "}
+      <h1 className="text-3xl font-bold text-center">
+        Please access the site after a minute
       </h1>
     </div>
   );

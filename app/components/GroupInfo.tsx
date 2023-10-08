@@ -38,7 +38,6 @@ export default function GroupInfo({
     setLoading(false);
     toast.success("Group left");
     router.push("/");
-    console.log(data);
   };
   return (
     <div className="border-l border-gray-300 hidden md:block pl-2 mx-1 flex flex-col items-center">

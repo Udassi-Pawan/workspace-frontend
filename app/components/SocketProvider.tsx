@@ -58,7 +58,6 @@ export function SocketProvider({ children }: SocketProviderProps) {
       const clientPromise = new Promise((resolve) => {
         client.on("connect", () => {
           resolve(client);
-          console.log("chek client here", client);
           import("peerjs").then(({ default: Peer }) => {
             const mypeer = new Peer(client.id, {
               "config": { "iceServers": iceServers },

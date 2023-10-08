@@ -48,7 +48,6 @@ export default function GroupDrive({
     setLoading();
     toast.success("File Uploaded");
   };
-  console.log(files);
   async function downloadHandler(filename: string, downloadFileName: string) {
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download`,
@@ -66,7 +65,6 @@ export default function GroupDrive({
     anchor.style.display = "none";
     anchor.href = data;
     anchor.download = encodeURIComponent(downloadFileName); // You cacn specify the default file name here
-    console.log(anchor);
     // Append the anchor to the document
     document.body.appendChild(anchor);
 

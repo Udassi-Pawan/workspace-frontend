@@ -40,11 +40,9 @@ export default function Chat({ messages, groupId }: Chat1Props) {
   };
   useEffect(() => {
     setChatHistory(messages);
-    console.log(messages);
   }, [messages]);
   useEffect(() => {
     if (!groupId) return;
-    console.log(groupId);
     socket?.on(`message ${groupId}`, (message: Message) => {
       setChatHistory((prev) => [...prev!, message]);
       return message;
@@ -61,7 +59,6 @@ export default function Chat({ messages, groupId }: Chat1Props) {
         filetype: curFile.type,
       }
     );
-    console.log(data);
     const { uploadUrl, videoId } = data;
     await axios.put(uploadUrl, curFile);
     return videoId;
@@ -80,7 +77,6 @@ export default function Chat({ messages, groupId }: Chat1Props) {
       setLoading(true);
     }
     let videoId = "";
-    console.log(videoFileRef.current.files.length);
     if (videoFileRef.current.files.length != 0) {
       videoId = await uploadHandler();
     }
@@ -101,7 +97,6 @@ export default function Chat({ messages, groupId }: Chat1Props) {
     setLoading();
   };
   const playHandler = async function (filename: string) {
-    console.log("play");
     const videoEl = document.getElementById(filename) as HTMLVideoElement;
     if (!videoEl.paused || videoEl.readyState >= 1) return;
     const { data } = await axios.post(
@@ -116,12 +111,9 @@ export default function Chat({ messages, groupId }: Chat1Props) {
         },
       }
     );
-    console.log(data);
     videoEl.src = data;
-    setTimeout(() => {
-      videoEl?.load();
-      videoEl?.play();
-    }, 200);
+    videoEl.load(); // Load the video source
+    videoEl.play(); // Play the video
   };
   function scrollToBottom() {
     const messagesContainer = document.getElementById("messages");

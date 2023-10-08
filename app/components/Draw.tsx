@@ -19,7 +19,6 @@ type DrawLineProps = {
 
 const Draw: FC<pageProps> = ({ groupId }) => {
   let { socket } = useContext(SocketContext);
-  console.log(groupId);
 
   const [color, setColor] = useState<string>("#000");
   const { canvasRef, onMouseDown, clear } = useDraw(createLine);

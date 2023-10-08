@@ -31,12 +31,10 @@ export default function Collab({
         name: docName.current!.value,
       }
     );
-    console.log(req);
     setLoading();
     toast.success("Document Created.");
     router.push(`/collab/${req.data._id}`);
   };
-  if (docs) console.log("docs", docs[0]);
   return (
     <>
       <div className="flex flex-col items-center gap-10 mt-20">
@@ -50,7 +48,15 @@ export default function Collab({
         <div className="flex justify-center m-2 gap-5 flex-wrap">
           {docs?.map((d) =>
             d ? (
-              <div key={d._id} className="">
+              <div
+                onClick={() => {
+                  toast.info(
+                    "Please wait a few moments for the document to load"
+                  );
+                }}
+                key={d._id}
+                className=""
+              >
                 <Link key={d._id} href={"/collab/" + d._id}>
                   <div className="relative inline-block px-4 py-2 font-medium group">
                     <span className="absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-black group-hover:-translate-x-0 group-hover:-translate-y-0"></span>

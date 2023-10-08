@@ -59,11 +59,9 @@ export default function Page({ params }: { params: { groupId: string } }) {
         },
       }
     );
-    console.log("groipdata", groupFromDb.data);
     setGroup(groupFromDb.data);
   }
   useEffect(() => {
-    console.log("session", session);
     if (!session?.authToken) return;
 
     getData();
@@ -72,7 +70,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
   const userOnlineHandler = ({ usersOnline, callStatus }: any) => {
     setUsersOnline(usersOnline);
     setThisGroupCallStatus(callStatus);
-    console.log("callStatus", callStatus);
   };
 
   useEffect(() => {
@@ -100,7 +97,6 @@ export default function Page({ params }: { params: { groupId: string } }) {
         },
       }
     );
-    console.log(data);
     setLoading(false);
     getData();
     toast.success("Joined successfully");

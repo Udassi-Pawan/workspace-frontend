@@ -24,6 +24,7 @@ import TableRow from "@tiptap/extension-table-row";
 import Gapcursor from "@tiptap/extension-gapcursor";
 import Highlight from "@tiptap/extension-highlight";
 import { MenuBar } from "./Tiptap";
+import { toast } from "react-toastify";
 let provider: any;
 const niceColors = [
   "#FF5733",
@@ -128,7 +129,6 @@ const DocById = ({ docId, docName }: { docId: string; docName: string }) => {
   );
 
   useEffect(() => {
-    console.log("now requestting ,", docId);
     provider = new HocuspocusProvider({
       url: `${process.env.NEXT_PUBLIC_COLLAB_SERVER}/document/${docId}`,
       name: docId,
@@ -138,6 +138,7 @@ const DocById = ({ docId, docName }: { docId: string; docName: string }) => {
       initiatliseEditor();
     }
   }, [session?.authToken, docId, initiatliseEditor]);
+
   return (
     <div className="flex flex-col border-primary border-4 rounded-2xl">
       <div className="py-1 px-2  bg-gray-200 rounded-xl text-black">
@@ -148,7 +149,6 @@ const DocById = ({ docId, docName }: { docId: string; docName: string }) => {
       </div>
       <EditorContent editor={editor} />
     </div>
-    // </div>
   );
 };
 

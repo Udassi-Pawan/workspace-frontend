@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DocById from "../../components/DocById";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface pageProps {
   params: {
@@ -17,7 +18,6 @@ export default function Page({ params }: pageProps) {
       );
       setDocName(data.name);
     } catch (error) {
-      // Handle errors if the GET request fails
       console.error("Error fetching document name:", error);
     }
   }, [params.docId, setDocName]);

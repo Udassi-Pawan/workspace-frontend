@@ -22,7 +22,6 @@ const convertToBase64 = (e: ChangeEvent<HTMLInputElement>) => {
   var reader = new FileReader();
   reader.readAsDataURL(e.target.files![0]);
   reader.onload = () => {
-    console.log(reader.result);
     image = reader.result!;
   };
 };
