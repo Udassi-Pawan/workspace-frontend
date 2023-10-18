@@ -351,6 +351,7 @@ export default function Page({ params }: { params: { groupId: string } }) {
     setOnCall(false);
     socket.emit(`endCall`, { groupId: params.groupId });
     stopStream();
+    router.push(`/group/${params.groupId}`);
   }
 
   async function turnAudioOffHandler() {
