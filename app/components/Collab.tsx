@@ -51,7 +51,10 @@ export default function Collab({
               <div
                 onClick={() => {
                   toast.info(
-                    "Please wait a few moments for the document to load"
+                    "Please wait a few moments for the document to load",
+                    {
+                      theme: "colored",
+                    }
                   );
                 }}
                 key={d._id}
