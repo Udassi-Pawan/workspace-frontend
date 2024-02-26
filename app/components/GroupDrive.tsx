@@ -41,7 +41,6 @@ export default function GroupDrive({
         },
       }
     );
-    console.log(data);
     const { uploadUrl } = data;
     await axios.put(uploadUrl, curFile);
     getData();
